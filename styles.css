@@ -1,0 +1,1789 @@
+/* General body styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    transition: background-color 0.5s, color 0.5s;
+    background: url('path/to/your/background.gif') center center/cover no-repeat;
+    color: #000000;
+}
+
+.main-body {
+    padding: 20px;
+    max-width: 800px;
+    width: 100%;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    transition: background 0.5s, color 0.5s;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.dark-mode-switch,
+.checkbox-wrapper-54 {
+    display: flex;
+    align-items: center;
+}
+
+.dark-mode-switch p,
+.checkbox-wrapper-54 p {
+    margin: 0 10px;
+}
+
+/* Centering the navigation buttons */
+.navigation {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.info-section,
+.info-section2 {
+    margin: 20px 0;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.info-section h2,
+.info-section2 h2 {
+    margin-top: 0;
+}
+
+.info-section ul,
+.info-section2 ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.info-section ul li,
+.info-section2 ul li {
+    margin: 5px 0;
+}
+
+/* Centering the profile image */
+.profile-image {
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    margin: 20px auto;
+    display: block;
+}
+
+/* Upload Container Styles */
+.upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    color: #000;
+}
+
+#fileUpload, [contenteditable], #fileDescription {
+    margin: 10px auto;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+    max-width: 400px;
+    color: #000;
+    display: block;
+    text-align: left;
+}
+
+/* Editable Divs with Placeholder */
+.editable-div:empty:before {
+    content: attr(placeholder);
+    color: gray;
+    pointer-events: none;
+    display: block;
+}
+
+/* Fixing the Upload Button in Light Mode */
+.light-mode #uploadButton {
+    background-color: #007BFF;
+    color: #fff;
+}
+
+.light-mode #uploadButton:hover {
+    background-color: #0056b3;
+}
+
+#uploadButton {
+    padding: 0.6em 2em;
+    cursor: pointer;
+    background-color: #111;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    z-index: 0;
+    margin: 20px;
+    user-select: none;
+}
+
+#uploadButton:before {
+    content: "";
+    background: linear-gradient(
+        45deg,
+        #ff0000,
+        #ff7300,
+        #fffb00,
+        #48ff00,
+        #00ffd5,
+        #002bff,
+        #7a00ff,
+        #ff00c8,
+        #ff0000
+    );
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(5px);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    animation: glowing-button-85 20s linear infinite;
+    transition: opacity 0.3s ease-in-out;
+    border-radius: 10px;
+}
+
+#uploadButton:hover {
+    background-color: #0056b3;
+}
+
+@keyframes glowing-button-85 {
+    0% {
+        background-position: 0 0;
+    }
+    50% {
+        background-position: 400% 0;
+    }
+    100% {
+        background-position: 0 0;
+    }
+}
+
+/* Popup toolbar */
+.popup-toolbar {
+    display: none;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: #fff;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.popup-toolbar button, .popup-toolbar input[type="color"] {
+    margin-right: 5px;
+    background-color: #555;
+    color: #fff;
+}
+
+.popup-toolbar button:hover {
+    background-color: #666;
+}
+
+/* Upload Preview Styles */
+.upload-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.preview-group {
+    position: relative;
+    overflow: hidden;
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.preview-header h4 {
+    margin: 10px 0 5px 0;
+    text-align: left;
+    font-weight: bold;
+    word-wrap: break-word;
+}
+
+.preview-item p {
+    margin: 5px 0;
+    text-align: left;
+    font-style: italic;
+    word-wrap: break-word;
+}
+
+.preview-header button {
+    background-color: #ff0000;
+    color: #fff;
+    border: none;
+    padding: 3px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.preview-header button:hover {
+    background-color: #cc0000;
+}
+
+.preview-item img, 
+.preview-item video {
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    margin: 0 auto;
+    display: block;
+    border-radius: 10px;
+}
+
+/* Dark Mode Styles */
+.dark-mode {
+    background: linear-gradient(to right, #2c3e50, #4ca1af);
+    color: #ffffff;
+    background: url('path/to/your/dark-mode-background.gif') center center/cover no-repeat;
+}
+
+.dark-mode .main-body {
+    background: rgba(34, 34, 34, 0.9);
+}
+
+.dark-mode button {
+    background-color: #333;
+    color: #fff;
+}
+
+.dark-mode button:hover {
+    background-color: #555;
+}
+
+.dark-mode .info-section,
+.dark-mode .info-section2 {
+    background: rgba(34, 34, 34, 0.9);
+    color: #ffffff;
+}
+
+.dark-mode .upload-container,
+.dark-mode .preview-group,
+.dark-mode .preview-header,
+.dark-mode .preview-item {
+    background-color: #222;
+    color: #fff;
+}
+
+.dark-mode #fileUpload, .dark-mode [contenteditable], .dark-mode #fileDescription {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+.dark-mode #uploadButton {
+    background-color: #444;
+    color: #fff;
+}
+
+.dark-mode #uploadButton:hover {
+    background-color: #666;
+}
+
+.dark-mode .popup-toolbar {
+    background-color: #444;
+    border-color: #666;
+}
+
+.dark-mode .popup-toolbar button {
+    background-color: #555;
+    color: #fff;
+}
+
+.dark-mode .popup-toolbar button:hover {
+    background-color: #666;
+}
+
+.dark-mode .preview-header button {
+    background-color: #cc0000;
+}
+
+/* URL Links in Dark Mode for better contrast */
+.dark-mode a {
+    color: #1E90FF;
+}
+
+.dark-mode a:hover {
+    color: #FFD700;
+}
+
+/* Glowing button styles */
+.button-85 {
+    padding: 0.6em 2em;
+    border: none;
+    outline: none;
+    color: rgb(255, 255, 255);/* General body styles */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        transition: background-color 0.5s, color 0.5s;
+        background: url('path/to/your/background.gif') center center/cover no-repeat;
+        color: #000000;
+    }
+    
+    .main-body {
+        padding: 20px;
+        max-width: 800px;
+        width: 100%;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 20px;
+        transition: background 0.5s, color 0.5s;
+    }
+    
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+        position: relative;
+    }
+    
+    .dark-mode-switch,
+    .checkbox-wrapper-54 {
+        display: flex;
+        align-items: center;
+    }
+    
+    .dark-mode-switch p,
+    .checkbox-wrapper-54 p {
+        margin: 0 10px;
+    }
+    
+    /* Centering the navigation buttons */
+    .navigation {
+        margin: 20px 0;
+        display: flex;
+        justify-content: center;
+    }
+    
+    button {
+        padding: 10px 20px;
+        margin: 0 10px;
+        cursor: pointer;
+        background-color: #007BFF;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+    
+    button:hover {
+        background-color: #0056b3;
+    }
+    
+    .info-section,
+    .info-section2 {
+        margin: 20px 0;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+    
+    .info-section h2,
+    .info-section2 h2 {
+        margin-top: 0;
+    }
+    
+    .info-section ul,
+    .info-section2 ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    
+    .info-section ul li,
+    .info-section2 ul li {
+        margin: 5px 0;
+    }
+    
+    /* Centering the profile image */
+    .profile-image {
+        border-radius: 50%;
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        margin: 20px auto;
+        display: block;
+    }
+    
+    /* Upload Container Styles */
+    .upload-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 20px;
+        color: #000;
+    }
+    
+    #fileUpload, [contenteditable], #fileDescription {
+        margin: 10px auto;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        width: 100%;
+        max-width: 400px;
+        color: #000;
+        display: block;
+        text-align: left;
+    }
+    
+    /* Editable Divs with Placeholder */
+    .editable-div:empty:before {
+        content: attr(placeholder);
+        color: gray;
+        pointer-events: none;
+        display: block;
+    }
+    
+    /* Fixing the Upload Button in Light Mode */
+    .light-mode #uploadButton {
+        background-color: #007BFF;
+        color: #fff;
+    }
+    
+    .light-mode #uploadButton:hover {
+        background-color: #0056b3;
+    }
+    
+    #uploadButton {
+        padding: 0.6em 2em;
+        cursor: pointer;
+        background-color: #111;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        transition: background-color 0.3s;
+        width: 100%;
+        max-width: 400px;
+        position: relative;
+        z-index: 0;
+        margin: 20px;
+        user-select: none;
+    }
+    
+    #uploadButton:before {
+        content: "";
+        background: linear-gradient(
+            45deg,
+            #ff0000,
+            #ff7300,
+            #fffb00,
+            #48ff00,
+            #00ffd5,
+            #002bff,
+            #7a00ff,
+            #ff00c8,
+            #ff0000
+        );
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        background-size: 400%;
+        z-index: -1;
+        filter: blur(5px);
+        width: calc(100% + 4px);
+        height: calc(100% + 4px);
+        animation: glowing-button-85 20s linear infinite;
+        transition: opacity 0.3s ease-in-out;
+        border-radius: 10px;
+    }
+    
+    #uploadButton:hover {
+        background-color: #0056b3;
+    }
+    
+    @keyframes glowing-button-85 {
+        0% {
+            background-position: 0 0;
+        }
+        50% {
+            background-position: 400% 0;
+        }
+        100% {
+            background-position: 0 0;
+        }
+    }
+    
+    /* Popup toolbar */
+    .popup-toolbar {
+        display: none;
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.8);
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 5px;
+        z-index: 1000;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        color: #fff;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .popup-toolbar button, .popup-toolbar input[type="color"] {
+        margin-right: 5px;
+        background-color: #555;
+        color: #fff;
+    }
+    
+    .popup-toolbar button:hover {
+        background-color: #666;
+    }
+    
+    /* Upload Preview Styles */
+    .upload-preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 20px;
+        width: 100%;
+    }
+    
+    .preview-group {
+        position: relative;
+        overflow: hidden;
+        max-width: 100%;
+        width: 100%;
+        height: auto;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        padding: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+    
+    .preview-header h4 {
+        margin: 10px 0 5px 0;
+        text-align: left;
+        font-weight: bold;
+        word-wrap: break-word;
+    }
+    
+    .preview-item p {
+        margin: 5px 0;
+        text-align: left;
+        font-style: italic;
+        word-wrap: break-word;
+    }
+    
+    .preview-header button {
+        background-color: #ff0000;
+        color: #fff;
+        border: none;
+        padding: 3px 8px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+    
+    .preview-header button:hover {
+        background-color: #cc0000;
+    }
+    
+    .preview-item img, 
+    .preview-item video {
+        width: 100%;
+        max-height: 400px;
+        object-fit: contain;
+        margin: 0 auto;
+        display: block;
+        border-radius: 10px;
+    }
+    
+    /* Dark Mode Styles */
+    .dark-mode {
+        background: linear-gradient(to right, #2c3e50, #4ca1af);
+        color: #ffffff;
+        background: url('path/to/your/dark-mode-background.gif') center center/cover no-repeat;
+    }
+    
+    .dark-mode .main-body {
+        background: rgba(34, 34, 34, 0.9);
+    }
+    
+    .dark-mode button {
+        background-color: #333;
+        color: #fff;
+    }
+    
+    .dark-mode button:hover {
+        background-color: #555;
+    }
+    
+    .dark-mode .info-section,
+    .dark-mode .info-section2 {
+        background: rgba(34, 34, 34, 0.9);
+        color: #ffffff;
+    }
+    
+    .dark-mode .upload-container,
+    .dark-mode .preview-group,
+    .dark-mode .preview-header,
+    .dark-mode .preview-item {
+        background-color: #222;
+        color: #fff;
+    }
+    
+    .dark-mode #fileUpload, .dark-mode [contenteditable], .dark-mode #fileDescription {
+        background-color: #333;
+        color: #fff;
+        border: 1px solid #555;
+    }
+    
+    .dark-mode #uploadButton {
+        background-color: #444;
+        color: #fff;
+    }
+    
+    .dark-mode #uploadButton:hover {
+        background-color: #666;
+    }
+    
+    .dark-mode .popup-toolbar {
+        background-color: #444;
+        border-color: #666;
+    }
+    
+    .dark-mode .popup-toolbar button {
+        background-color: #555;
+        color: #fff;
+    }
+    
+    .dark-mode .popup-toolbar button:hover {
+        background-color: #666;
+    }
+    
+    .dark-mode .preview-header button {
+        background-color: #cc0000;
+    }
+    
+    /* URL Links in Dark Mode for better contrast */
+    .dark-mode a {
+        color: #1E90FF;
+    }
+    
+    .dark-mode a:hover {
+        color: #FFD700;
+    }
+    
+    /* Glowing button styles */
+    .button-85 {
+        padding: 0.6em 2em;
+        border: none;
+        outline: none;
+        color: rgb(255, 255, 255);
+        background: #111;
+        cursor: pointer;
+        position: relative;
+        z-index: 0;
+        border-radius: 10px;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        margin: 20px;
+    }
+    
+    .button-85:before {
+        content: "";
+        background: linear-gradient(
+            45deg,
+            #ff0000,
+            #ff7300,
+            #fffb00,
+            #48ff00,
+            #00ffd5,
+            #002bff,
+            #7a00ff,
+            #ff00c8,
+            #ff0000
+        );
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        background-size: 400%;
+        z-index: -1;
+        filter: blur(5px);
+        width: calc(100% + 4px);
+        height: calc(100% + 4px);
+        animation: glowing-button-85 20s linear infinite;
+        transition: opacity 0.3s ease-in-out;
+        border-radius: 10px;
+    }
+    
+    @keyframes glowing-button-85 {
+        0% {
+            background-position: 0 0;
+        }
+        50% {
+            background-position: 400% 0;
+        }
+        100% {
+            background-position: 0 0;
+        }
+    }
+    
+    body.dark-mode {
+        background: linear-gradient(to right, #b5bcc8, #0a3ab2);
+    }
+    
+    .button-85:after {
+        z-index: -1;
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: #222;
+        left: 0;
+        top: 0;
+        border-radius: 10px;
+    }
+    
+    .dark-mode .button-85 {
+        background: #222;
+    }
+    
+    .dark-mode .button-85:after {
+        background: #111;
+    }
+    
+    /* New dark mode switch styles */
+    .checkbox-wrapper-54 input[type="checkbox"] {
+        visibility: hidden;
+        display: none;
+    }
+    
+    .checkbox-wrapper-54 *,
+    .checkbox-wrapper-54 ::after,
+    .checkbox-wrapper-54 ::before {
+        box-sizing: border-box;
+    }
+    
+    /* The switch - the box around the slider */
+    .checkbox-wrapper-54 .switch {
+        --width-of-switch: 3.5em;
+        --height-of-switch: 2em;
+        --size-of-icon: 1.4em;
+        --slider-offset: 0.3em;
+        position: relative;
+        width: var(--width-of-switch);
+        height: var(--height-of-switch);
+        display: inline-block;
+    }
+    
+    /* The slider */
+    .checkbox-wrapper-54 .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #f4f4f5;
+        transition: .4s;
+        border-radius: 30px;
+    }
+    
+    .checkbox-wrapper-54 .slider:before {
+        position: absolute;
+        content: "";
+        height: var(--size-of-icon, 1.4em);
+        width: var(--size-of-icon, 1.4em);
+        border-radius: 20px;
+        left: var(--slider-offset, 0.3em);
+        top: 50%;
+        transform: translateY(-50%);
+        background: linear-gradient(40deg, #ff0080, #ff8c00 70%);
+        transition: .4s;
+    }
+    
+    .checkbox-wrapper-54 input:checked + .slider {
+        background-color: #303136;
+    }
+    
+    .checkbox-wrapper-54 input:checked + .slider:before {
+        left: calc(100% - (var(--size-of-icon, 1.4em) + var(--slider-offset, 0.3em)));
+        background: #303136;
+        box-shadow: inset -3px -2px 5px -2px #8983f7, inset -10px -4px 0 0 #a3dafb;
+    }
+    
+    /* Light mode styles */
+    body.light-mode {
+        background: linear-gradient(to right, #fffbd5, #b20a2c);
+    }
+    
+    .light-mode .main-body {
+        background: rgba(255, 255, 255, 0.9);
+    }
+    
+    .light-mode .button-85 {
+        background: #fff;
+        color: #333;
+    }
+    
+    .light-mode .button-85:after {
+        background: #ddd;
+    }
+    
+    /* Fixes and Updates */
+    .upload-preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+    
+    .preview-item button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #ff0000;
+        border: none;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+    .preview-item h4,
+    .preview-item p {
+        margin: 5px 0;
+        text-align: left;
+        word-wrap: break-word;
+    }
+    
+    .preview-item img {
+        max-width: 100%;
+        border-radius: 10px;
+    }
+    
+   /* Admin Login Styles */
+#adminLogin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2px; /* Reduced padding */
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 5px; /* Smaller border radius */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 30px; /* Reduced width */
+    position: absolute;
+    left: 85%;
+    transform: translateX(-50%);
+    margin-top: 15px; /* Reduced top margin */
+}
+
+#adminLogin input {
+    margin: 1px 0; /* Smaller margin */
+    padding: 1px; /* Reduced padding */
+    border-radius: 2px; /* Smaller border radius */
+    border: 1px solid #ccc;
+    width: 10px; /* Smaller width */
+    font-size: 3px; /* Tiny font size */
+}
+
+#loginButton {
+    padding: 1px 2px; /* Smaller padding */
+    margin: 1px 0; /* Reduced margin */
+    cursor: pointer;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 2px; /* Smaller border radius */
+    transition: background-color 0.3s;
+    width: 7.5px; /* Smaller width */
+    font-size: 2px; /* Very tiny font size */
+}
+
+#loginButton:hover {
+    background-color: #0056b3;
+}
+
+.dark-mode #adminLogin {
+    background: rgba(34, 34, 34, 0.9);
+}
+
+.dark-mode #adminLogin input {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+.dark-mode #loginButton {
+    background-color: #444;
+}
+
+.dark-mode #loginButton:hover {
+    background-color: #666;
+}
+
+/* Further adjustments for smaller devices */
+@media (max-width: 768px) {
+    #adminLogin {
+        transform: scale(0.05); /* Scale down to 5% of the original size */
+        transform-origin: top left;
+        left: 75%; /* Adjusted position */
+        padding: 0;
+        margin: 0;
+    }
+
+    #adminLogin input, #loginButton {
+        padding: 0; /* Further reducing padding */
+        font-size: 3px; /* Extremely small font size */
+        border-radius: 1px; /* Tiny border radius */
+    }
+
+    #loginButton {
+        width: 8px; /* Very tiny width */
+    }
+}
+    
+/* Loading screen styles */
+#loadingScreen {
+    position: fixed; /* Changed from absolute to fixed */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 150px;
+    background: transparent;
+    border: 3px solid #3c3c3c;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 150px;
+    font-family: sans-serif;
+    font-size: 20px;
+    color: #fff000;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px #fff000;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .5);
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+}
+
+#loadingScreen:before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    width: 100%;
+    height: 100%;
+    border: 3px solid transparent;
+    border-top: 3px solid #fff000;
+    border-right: 3px solid #fff000;
+    border-radius: 50%;
+    animation: animateC 2s linear infinite;
+}
+
+#loadingScreen span {
+    display: block;
+    position: absolute;
+    top: calc(50% - 2px);
+    left: 50%;
+    width: 50%;
+    height: 4px;
+    background: transparent;
+    transform-origin: left;
+    animation: animate 2s linear infinite;
+}
+
+#loadingScreen span:before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff000;
+    top: -6px;
+    right: -8px;
+    box-shadow: 0 0 20px #fff000;
+}
+
+@keyframes animateC {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes animate {
+    0% { transform: rotate(45deg); }
+    100% { transform: rotate(405deg); }
+}
+
+/* Dark mode adjustments for the loading screen */
+.dark-mode #loadingScreen {
+    border-color: #fff;
+    text-shadow: 0 0 10px #fff;
+}
+
+.dark-mode #loadingScreen:before {
+    border-top: 3px solid #fff;
+    border-right: 3px solid #fff;
+}
+
+.dark-mode #loadingScreen span:before {
+    background: #fff;
+    box-shadow: 0 0 20px #fff;
+}
+    
+    /* Styling for the Projects Page */
+    .button-404 {
+        padding: 5px 10px;
+        background-color: #ff85a1;
+        color: #fff;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 0 5px #ff85a1, 0 0 10px #ff85a1;
+        margin-top: 10px;
+    }
+    
+    .button-404:hover {
+        background-color: #ff4f7f;
+        box-shadow: 0 0 10px #ff4f7f, 0 0 20px #ff4f7f;
+    }
+    
+    /* Styling for the 404 page */
+    .milkyway-theme {
+        background: radial-gradient(circle at 50% 50%, #000b76, #0d1b7e, #253080); /* Enhanced Milky Way colors with more blues and night shades */
+        color: #fff;
+        font-family: 'Kirang Haerang', cursive;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+    }
+    
+    .copy-container p {
+        font-size: 36px;
+        letter-spacing: 2px;
+        text-shadow: 0px 0px 10px #FFFFFF, 0px 0px 20px #FFB6C1; /* Glowing text for visibility */
+        color: #FFF5EE;
+        font-family: 'Comic Sans MS', cursive, sans-serif; /* Cute and playful font */
+    }
+    
+    /* Container and background styling for 404 page */
+    .container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        text-align: center;
+        background: radial-gradient(circle, #3949ab, #283593, #1a237e); /* Adding more blue hues to the background */
+        animation: twinkling 3s infinite alternate;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+    
+    /* Style for the cute stars */
+    .star {
+        position: absolute;
+        font-size: 1.2rem;
+        opacity: 0.9;
+        transition: all 0.3s;
+        animation: blink 1.5s infinite alternate;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Arial', sans-serif;
+        color: #fff;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 
+                     0 0 10px rgba(255, 182, 193, 0.6), 
+                     0 0 15px rgba(255, 182, 193, 0.4); /* Glow effect */
+    }
+    
+    /* Additional cute Kirby-like colors for stars */
+    .star.cute {
+        color: #FF69B4; /* Pink */
+    }
+    
+    .star.blue {
+        color: #87CEEB; /* Light Blue */
+    }
+    
+    .star.yellow {
+        color: #FFD700; /* Yellow */
+    }
+    
+    .star.white {
+        color: #FFFFFF; /* White */
+    }
+    
+    .star.pastelPurple {
+        color: #C3B1E1; /* Light pastel purple */
+    }
+    
+    .star.lightGreen {
+        color: #C8E6C9; /* Light pastel green */
+    }
+    
+    /* Animation for blinking stars */
+    @keyframes twinkling {
+        0% {
+            background-position: 0 0;
+        }
+        100% {
+            background-position: 50px 50px;
+        }
+    }
+    
+    @keyframes blink {
+        0% {
+            opacity: 0.6;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+    
+    /* Styling for the back button on the 404 page */
+    .back-home-container .button-85 {
+        padding: 10px 20px;
+        background-color: #ff85a1;
+        color: #fff;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 0 5px #ff85a1, 0 0 10px #ff85a1, 0 0 15px #ff85a1;
+        z-index: 10; /* Ensure the button is not hidden behind other elements */
+        font-size: 1rem; /* Slightly increased size */
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.8); /* Glow effect */
+    }
+    
+    .back-home-container .button-85:hover {
+        background-color: #ff4f7f;
+        box-shadow: 0 0 10px #ff4f7f, 0 0 20px #ff4f7f, 0 0 30px #ff4f7f;
+    }
+    
+    /* Adjusted the 404 button in the Projects Page */
+    .navigation .button-85.smaller-button {
+        padding: 5px 10px;
+        font-size: 0.8rem; /* Adjusting font size for smaller button */
+        margin-top: 5px; /* Slightly reduced margin */
+    }
+    
+    /* Adjustments for responsiveness */
+    @media (max-width: 768px) {
+        .copy-container p {
+            font-size: 24px;
+        }
+        .back-home-container .button-85 {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+        .navigation .button-85.smaller-button {
+            padding: 4px 8px;
+            font-size: 0.7rem;
+        }
+    }
+    
+    background: #111;
+    cursor: pointer;
+    position: relative;
+    z-index: 0;
+    border-radius: 10px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    margin: 20px;
+}
+
+.button-85:before {
+    content: "";
+    background: linear-gradient(
+        45deg,
+        #ff0000,
+        #ff7300,
+        #fffb00,
+        #48ff00,
+        #00ffd5,
+        #002bff,
+        #7a00ff,
+        #ff00c8,
+        #ff0000
+    );
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(5px);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    animation: glowing-button-85 20s linear infinite;
+    transition: opacity 0.3s ease-in-out;
+    border-radius: 10px;
+}
+
+@keyframes glowing-button-85 {
+    0% {
+        background-position: 0 0;
+    }
+    50% {
+        background-position: 400% 0;
+    }
+    100% {
+        background-position: 0 0;
+    }
+}
+
+body.dark-mode {
+    background: linear-gradient(to right, #b5bcc8, #0a3ab2);
+}
+
+.button-85:after {
+    z-index: -1;
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #222;
+    left: 0;
+    top: 0;
+    border-radius: 10px;
+}
+
+.dark-mode .button-85 {
+    background: #222;
+}
+
+.dark-mode .button-85:after {
+    background: #111;
+}
+
+/* New dark mode switch styles */
+.checkbox-wrapper-54 input[type="checkbox"] {
+    visibility: hidden;
+    display: none;
+}
+
+.checkbox-wrapper-54 *,
+.checkbox-wrapper-54 ::after,
+.checkbox-wrapper-54 ::before {
+    box-sizing: border-box;
+}
+
+/* The switch - the box around the slider */
+.checkbox-wrapper-54 .switch {
+    --width-of-switch: 3.5em;
+    --height-of-switch: 2em;
+    --size-of-icon: 1.4em;
+    --slider-offset: 0.3em;
+    position: relative;
+    width: var(--width-of-switch);
+    height: var(--height-of-switch);
+    display: inline-block;
+}
+
+/* The slider */
+.checkbox-wrapper-54 .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #f4f4f5;
+    transition: .4s;
+    border-radius: 30px;
+}
+
+.checkbox-wrapper-54 .slider:before {
+    position: absolute;
+    content: "";
+    height: var(--size-of-icon, 1.4em);
+    width: var(--size-of-icon, 1.4em);
+    border-radius: 20px;
+    left: var(--slider-offset, 0.3em);
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(40deg, #ff0080, #ff8c00 70%);
+    transition: .4s;
+}
+
+.checkbox-wrapper-54 input:checked + .slider {
+    background-color: #303136;
+}
+
+.checkbox-wrapper-54 input:checked + .slider:before {
+    left: calc(100% - (var(--size-of-icon, 1.4em) + var(--slider-offset, 0.3em)));
+    background: #303136;
+    box-shadow: inset -3px -2px 5px -2px #8983f7, inset -10px -4px 0 0 #a3dafb;
+}
+
+/* Light mode styles */
+body.light-mode {
+    background: linear-gradient(to right, #fffbd5, #b20a2c);
+}
+
+.light-mode .main-body {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.light-mode .button-85 {
+    background: #fff;
+    color: #333;
+}
+
+.light-mode .button-85:after {
+    background: #ddd;
+}
+
+/* Fixes and Updates */
+.upload-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.preview-item button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ff0000;
+    border: none;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.preview-item h4,
+.preview-item p {
+    margin: 5px 0;
+    text-align: left;
+    word-wrap: break-word;
+}
+
+.preview-item img {
+    max-width: 100%;
+    border-radius: 10px;
+}
+
+/* Default state for delete buttons */
+.delete-button {
+    display: none; /* Hidden by default */
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+    opacity: 0.5; /* Dimmed for visual clarity */
+    pointer-events: none; /* Prevent clicking by default */
+}
+
+/* Make delete buttons functional when admin is logged in */
+body.admin-enabled .delete-button {
+    display: block; /* Show for admins */
+    opacity: 1; /* Fully opaque for admins */
+    pointer-events: auto; /* Allow clicking for admins */
+    cursor: pointer;
+}
+
+/* Delete button hover effects */
+.delete-button:hover {
+    background-color: #ff0000;
+}
+
+/* Disabled state */
+.delete-button.disabled {
+    cursor: not-allowed;
+    background-color: #cccccc;
+    pointer-events: none; /* Prevent clicks */
+}
+
+/* Admin Login Styles */
+#adminLogin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 110px;
+    position: absolute;
+    left: 85%;
+    transform: translateX(-50%);
+    margin-top: 30px;
+}
+
+#adminLogin input {
+    margin: 3px 0;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 90%;
+    max-width: 145px;
+}
+
+#loginButton {
+    padding: 5px 10px;
+    margin: 5px 0;
+    cursor: pointer;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    width: 80px;
+}
+
+#loginButton:hover {
+    background-color: #0056b3;
+}
+
+.dark-mode #adminLogin {
+    background: rgba(34, 34, 34, 0.9);
+}
+
+.dark-mode #adminLogin input {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+.dark-mode #loginButton {
+    background-color: #444;
+}
+
+.dark-mode #loginButton:hover {
+    background-color: #666;
+}
+
+/* Loading screen styles */
+#loadingScreen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 150px;
+    background: transparent;
+    border: 3px solid #3c3c3c;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 150px;
+    font-family: sans-serif;
+    font-size: 20px;
+    color: #fff000;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px #fff000;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .5);
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+}
+
+#loadingScreen:before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    width: 100%;
+    height: 100%;
+    border: 3px solid transparent;
+    border-top: 3px solid #fff000;
+    border-right: 3px solid #fff000;
+    border-radius: 50%;
+    animation: animateC 2s linear infinite;
+}
+
+#loadingScreen span {
+    display: block;
+    position: absolute;
+    top: calc(50% - 2px);
+    left: 50%;
+    width: 50%;
+    height: 4px;
+    background: transparent;
+    transform-origin: left;
+    animation: animate 2s linear infinite;
+}
+
+#loadingScreen span:before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff000;
+    top: -6px;
+    right: -8px;
+    box-shadow: 0 0 20px #fff000;
+}
+
+@keyframes animateC {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes animate {
+    0% { transform: rotate(45deg); }
+    100% { transform: rotate(405deg); }
+}
+
+/* Dark mode adjustments for the loading screen */
+.dark-mode #loadingScreen {
+    border-color: #fff;
+    text-shadow: 0 0 10px #fff;
+}
+
+.dark-mode #loadingScreen:before {
+    border-top: 3px solid #fff;
+    border-right: 3px solid #fff;
+}
+
+.dark-mode #loadingScreen span:before {
+    background: #fff;
+    box-shadow: 0 0 20px #fff;
+}
+
+/* Styling for the Projects Page */
+.button-404 {
+    padding: 5px 10px;
+    background-color: #ff85a1;
+    color: #fff;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 5px #ff85a1, 0 0 10px #ff85a1;
+    margin-top: 10px;
+}
+
+.button-404:hover {
+    background-color: #ff4f7f;
+    box-shadow: 0 0 10px #ff4f7f, 0 0 20px #ff4f7f;
+}
+
+/* Styling for the 404 page */
+.milkyway-theme {
+    background: radial-gradient(circle at 50% 50%, #000b76, #0d1b7e, #253080); /* Enhanced Milky Way colors with more blues and night shades */
+    color: #fff;
+    font-family: 'Kirang Haerang', cursive;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.copy-container p {
+    font-size: 36px;
+    letter-spacing: 2px;
+    text-shadow: 0px 0px 10px #FFFFFF, 0px 0px 20px #FFB6C1; /* Glowing text for visibility */
+    color: #FFF5EE;
+    font-family: 'Comic Sans MS', cursive, sans-serif; /* Cute and playful font */
+}
+
+/* Container and background styling for 404 page */
+.container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    text-align: center;
+    background: radial-gradient(circle, #3949ab, #283593, #1a237e); /* Adding more blue hues to the background */
+    animation: twinkling 3s infinite alternate;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+/* Style for the cute stars */
+.star {
+    position: absolute;
+    font-size: 1.2rem;
+    opacity: 0.9;
+    transition: all 0.3s;
+    animation: blink 1.5s infinite alternate;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Arial', sans-serif;
+    color: #fff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 
+                 0 0 10px rgba(255, 182, 193, 0.6), 
+                 0 0 15px rgba(255, 182, 193, 0.4); /* Glow effect */
+}
+
+/* Additional cute Kirby-like colors for stars */
+.star.cute {
+    color: #FF69B4; /* Pink */
+}
+
+.star.blue {
+    color: #87CEEB; /* Light Blue */
+}
+
+.star.yellow {
+    color: #FFD700; /* Yellow */
+}
+
+.star.white {
+    color: #FFFFFF; /* White */
+}
+
+.star.pastelPurple {
+    color: #C3B1E1; /* Light pastel purple */
+}
+
+.star.lightGreen {
+    color: #C8E6C9; /* Light pastel green */
+}
+
+/* Animation for blinking stars */
+@keyframes twinkling {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 50px 50px;
+    }
+}
+
+@keyframes blink {
+    0% {
+        opacity: 0.6;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Styling for the back button on the 404 page */
+.back-home-container .button-85 {
+    padding: 10px 20px;
+    background-color: #ff85a1;
+    color: #fff;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 5px #ff85a1, 0 0 10px #ff85a1, 0 0 15px #ff85a1;
+    z-index: 10; /* Ensure the button is not hidden behind other elements */
+    font-size: 1rem; /* Slightly increased size */
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8); /* Glow effect */
+}
+
+.back-home-container .button-85:hover {
+    background-color: #ff4f7f;
+    box-shadow: 0 0 10px #ff4f7f, 0 0 20px #ff4f7f, 0 0 30px #ff4f7f;
+}
+
+/* Adjusted the 404 button in the Projects Page */
+.navigation .button-85.smaller-button {
+    padding: 5px 10px;
+    font-size: 0.8rem; /* Adjusting font size for smaller button */
+    margin-top: 5px; /* Slightly reduced margin */
+}
+
+/* Adjustments for responsiveness */
+@media (max-width: 768px) {
+    .copy-container p {
+        font-size: 24px;
+    }
+    .back-home-container .button-85 {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+    .navigation .button-85.smaller-button {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+    }
+}

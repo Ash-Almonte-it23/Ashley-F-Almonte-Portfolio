@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Projects</title>
+</head>
+<body>
+    <div id="loadingScreen" class="ring">Loading
+        <span></span>
+    </div>
+      
+    <div class="main-body">
+        <div class="header">
+            <h1>Projects Page</h1>
+            <div class="checkbox-wrapper-54">
+                <label class="switch">
+                    <input type="checkbox" id="dark-mode-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <!-- Admin Login Form -->
+            <div id="adminLogin" class="block-cube">
+                <form autocomplete="off">
+                    <div class="control block-cube block-input">
+                        <input type="text" id="username" placeholder="Username">
+                    </div>
+                    <div class="control block-cube block-input">
+                        <input type="password" id="password" placeholder="Password">
+                    </div>
+                    <button type="button" id="loginButton" class="btn block-cube block-cube-hover">
+                        <div class="bg-top"><div class="bg-inner"></div></div>
+                        <div class="bg-right"><div class="bg-inner"></div></div>
+                        <div class="bg"><div class="bg-inner"></div></div>
+                        <div class="text">Log In</div>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="button-85" onclick="window.location.href='index.html'">Home</button>
+            <button class="button-85" onclick="window.location.href='Internships.html'">Internships</button>
+            <!-- Adjusted 404 button with smaller size and positioned below -->
+            <button class="button-85 smaller-button" onclick="window.location.href='404.html'">404 Page</button>        
+        </div>
+        <div class="info-section">
+            <h2>Project Title</h2>
+            <p>Description of the project...</p>
+        </div>
+
+        <div class="upload-container" style="display:none;">
+            <h2>Upload Files</h2>
+            <input type="file" id="fileUploadProjects" multiple>
+            <div contenteditable="true" id="fileTitleProjects" class="editable-div" placeholder="Enter file title">Enter file title</div>
+            <div class="popup-toolbar" id="popupToolbarTitleProjects">
+                <button type="button" title="Bold"><b>B</b></button>
+                <button type="button" title="Italic"><i>I</i></button>
+                <button type="button" title="Underline"><u>U</u></button>
+                <button type="button" title="Increase Font Size">A+</button>
+                <button type="button" title="Decrease Font Size">A-</button>
+                <input type="color" title="Font Color">
+            </div>
+            <div contenteditable="true" id="fileDescriptionProjects" class="editable-div" placeholder="Enter file description">Enter file description</div>
+            <div class="popup-toolbar" id="popupToolbarDescriptionProjects">
+                <button type="button" title="Bold"><b>B</b></button>
+                <button type="button" title="Italic"><i>I</i></button>
+                <button type="button" title="Underline"><u>U</u></button>
+                <button type="button" title="Increase Font Size">A+</button>
+                <button type="button" title="Decrease Font Size">A-</button>
+                <input type="color" title="Font Color">
+            </div>
+            <button id="uploadButtonProjects" class="button-85">Upload</button>
+        </div>
+
+        <div id="uploadPreviewProjects" class="upload-preview"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+

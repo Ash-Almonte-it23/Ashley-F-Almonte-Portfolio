@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <link href="styles.css" rel="stylesheet"/>
+    <title>404 Not Found</title>
+</head>
+<body class="milkyway-theme">
+    <div class="container">
+        <div class="copy-container center-xy">
+            <p class="kirby-font cute-404-text">404, page not found.</p>
+        </div>
+        <!-- Star container for the cute stars and faces -->
+        <div class="star-container" id="starContainer"></div>
+        <!-- Go Back Button with adjusted position and glowing effect -->
+        <div class="back-home-container" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 999;">
+            <button class="button-85 smaller-button" onclick="window.location.href='index.html'">Go Back to Home</button>
+        </div>
+    </div>
+
+    <!-- Adding the script for stars twinkling effect -->
+    <script>
+        // Function to create cute Milky Way stars and faces
+        function createCuteStars() {
+            const starsContainer = document.getElementById('starContainer');
+            const starEmojis = ['⭐', '🌟', '🌙', '☁️', '💫']; // Cute stars
+            const cuteFaces = ['😊', '😚', '😌', '🥰', '🤩', '😇']; // Cute faces
+            const colors = ['#FF69B4', '#FFC1CC', '#FFB6C1', '#87CEEB', '#F5F5F5', '#FFFFFF', '#C3B1E1', '#A9A9E0', '#B0E0E6', '#B3E5FC', '#BDB76B']; // Pastel colors
+
+            for (let i = 0; i < 150; i++) { // Adjusted number for balanced stars
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.position = 'absolute';
+                star.style.fontSize = `${Math.random() * 2.5 + 1.5}rem`; // Larger size for stars
+                star.style.top = `${Math.random() * 100}vh`;
+                star.style.left = `${Math.random() * 100}vw`;
+                star.style.opacity = `${Math.random() * 0.8 + 0.2}`;
+                star.style.color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Randomly choose between a star or a cute face
+                star.textContent = Math.random() > 0.5 ? starEmojis[Math.floor(Math.random() * starEmojis.length)] : cuteFaces[Math.floor(Math.random() * cuteFaces.length)];
+
+                star.style.animation = `blink ${Math.random() * 2 + 1}s infinite alternate`;
+                starsContainer.appendChild(star);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createCuteStars();
+
+            const replayIcon = document.getElementById('cb-replay');
+            if (replayIcon) {
+                replayIcon.addEventListener('click', function () {
+                    const starsContainer = document.getElementById('starContainer');
+                    while (starsContainer.firstChild) {
+                        starsContainer.removeChild(starsContainer.firstChild);
+                    }
+                    createCuteStars();
+                    replayIcon.classList.add('spin-animation');
+                    setTimeout(() => {
+                        replayIcon.classList.remove('spin-animation');
+                    }, 1000);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
