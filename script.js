@@ -2,6 +2,8 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "firebase/firestore";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";  // Added auth functions
+
 
 // Firebase configuration
 const firebaseConfig = {
@@ -18,12 +20,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
+const auth = getAuth(app);  // Initialize Firebase Auth
 
 document.addEventListener('DOMContentLoaded', function () {
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const body = document.body;
     const loadingScreen = document.getElementById('loadingScreen');
-    let isAdmin = localStorage.getItem('isAdmin') === 'true';
+    let isAdmin = false;  // Track admin status
 
     // Loading Screen Logic
     window.addEventListener('load', function () {
@@ -59,34 +62,34 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    
-    // Admin Login Functionality
+
+    // Admin Login Functionality with Firebase Authentication
     const loginButton = document.getElementById('loginButton');
     const usernameField = document.getElementById('username');
     const passwordField = document.getElementById('password');
 
     if (loginButton) {
-        loginButton.addEventListener('click', function () {
-            const username = usernameField.value.trim();
+        loginButton.addEventListener('click', async function () {
+            const email = usernameField.value.trim();
             const password = passwordField.value.trim();
 
-            if (username === 'AAadmin' && password === '2025AAadmin') {
-                alert('Login successful');
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 isAdmin = true;
                 localStorage.setItem('isAdmin', 'true');
                 document.body.classList.add('admin-enabled');
-                document.querySelector('.upload-container').style.display = 'block';
                 toggleDeleteButtons();
+                alert('Login successful');
                 usernameField.value = '';
                 passwordField.value = '';
                 document.getElementById('adminLogin').style.display = 'none';
-            } else {
+            } catch (error) {
+                console.error("Authentication failed:", error.message);
                 alert('Invalid credentials. Please try again.');
             }
         });
     }
 
-    // Toggle delete buttons visibility and functionality based on admin status
     function toggleDeleteButtons() {
         document.querySelectorAll('.delete-button').forEach(button => {
             button.style.display = isAdmin ? 'block' : 'none';
@@ -135,7 +138,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Set up upload and preview loading for each section
     const uploadButtonInternships = document.getElementById('uploadButtonInternships');
     const uploadPreviewInternships = document.getElementById('uploadPreviewInternships');
     uploadButtonInternships.addEventListener('click', function () {
@@ -172,7 +174,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Create a preview element for a file or text entry
     function createPreview(fileName, title, description, fileUrl, previewContainer) {
         const previewGroup = document.createElement('div');
         previewGroup.classList.add('preview-group');
@@ -207,55 +208,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         previewContainer.appendChild(previewGroup);
-    }
-
-    // Popup toolbar for text formatting in the description and title fields
-    function setupPopupToolbar(containerId, toolbarId) {
-        const container = document.getElementById(containerId);
-        const toolbar = document.getElementById(toolbarId);
-
-        if (!container || !toolbar) {
-            console.error(`Element not found: ${containerId}, ${toolbarId}`);
-            return;
-        }
-
-        container.addEventListener('mouseup', () => {
-            const selection = window.getSelection();
-            if (selection.toString().length > 0) {
-                const containerRect = container.getBoundingClientRect();
-                toolbar.style.top = `${containerRect.top + window.scrollY - toolbar.offsetHeight - 50}px`;
-                toolbar.style.left = `${containerRect.left + window.scrollX}px`;
-                toolbar.style.display = 'block';
-            } else {
-                toolbar.style.display = 'none';
-            }
-        });
-
-        toolbar.querySelectorAll('button').forEach(button => {
-            button.addEventListener('click', () => {
-                document.execCommand(button.title.toLowerCase(), false, null);
-                toolbar.style.display = 'none';
-            });
-        });
-
-        toolbar.querySelector('input[type="color"]').addEventListener('input', (event) => {
-            document.execCommand('foreColor', false, event.target.value);
-        });
-
-        toolbar.querySelector('button[title="Increase Font Size"]').addEventListener('click', () => {
-            document.execCommand('fontSize', false, '4');
-            toolbar.style.display = 'none';
-        });
-        toolbar.querySelector('button[title="Decrease Font Size"]').addEventListener('click', () => {
-            document.execCommand('fontSize', false, '2');
-            toolbar.style.display = 'none';
-        });
-
-        document.addEventListener('mousedown', function (event) {
-            if (!toolbar.contains(event.target) && !container.contains(event.target)) {
-                toolbar.style.display = 'none';
-            }
-        });
     }
 
     setupPopupToolbar('fileTitleInternships', 'popupToolbarTitleInternships');
