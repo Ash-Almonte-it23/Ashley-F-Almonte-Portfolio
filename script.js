@@ -4,7 +4,6 @@ import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";  // Added auth functions
 
-
 // Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCfKdtYUZ1RfxPf5emKvQFzP-Q7_xgNzDM",
@@ -36,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
                 }, 1000);
-            }, 1000);
+            }, 3000); // Display for 3 seconds
         }
     });
 
