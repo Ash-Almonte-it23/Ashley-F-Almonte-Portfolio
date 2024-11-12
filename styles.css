@@ -1024,7 +1024,7 @@ button:hover {
     
 /* Loading screen styles */
 #loadingScreen {
-    position: fixed; /* Changed from absolute to fixed */
+    position: fixed; /* Fixed position to center */
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -1045,6 +1045,7 @@ button:hover {
     z-index: 9999;
     opacity: 1;
     transition: opacity 1s ease-in-out;
+    animation: animateC 2s linear infinite; /* Rotate animation */
 }
 
 #loadingScreen:before {
@@ -1085,6 +1086,7 @@ button:hover {
     box-shadow: 0 0 20px #fff000;
 }
 
+/* Keyframes for animations */
 @keyframes animateC {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -1110,6 +1112,7 @@ button:hover {
     background: #fff;
     box-shadow: 0 0 20px #fff;
 }
+
     
     /* Styling for the Projects Page */
     .button-404 {
