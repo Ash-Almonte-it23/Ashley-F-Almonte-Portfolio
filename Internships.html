@@ -1,90 +1,194 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Internships</title>
+document.addEventListener('DOMContentLoaded', function () {
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const body = document.body;
+    const loadingScreen = document.getElementById('loadingScreen');
+    const adminLogin = document.getElementById('adminLogin'); // Admin login form
+    let isAdmin = false;
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-</head>
-<body>
-    <!-- Loading Screen -->
-    <div id="loadingScreen" class="ring">Loading
-        <span></span>
-    </div>
+    // Loading Screen Logic
+    window.addEventListener('load', function () {
+        if (loadingScreen) {
+            setTimeout(() => {
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 1000);
+            }, 3000); // Display for 3 seconds
+        }
+    });
 
-    <div class="main-body">
-        <div class="header">
-            <h1>Internships Page</h1>
-            <div class="checkbox-wrapper-54">
-                <label class="switch">
-                    <input type="checkbox" id="dark-mode-toggle">
-                    <span class="slider"></span>
-                </label>
-            </div>
+    // Dark Mode Toggle Logic
+    let currentTheme = localStorage.getItem('theme') || 'light-mode';
+    body.classList.add(currentTheme);
+    darkModeToggle.checked = (currentTheme === 'dark-mode');
 
-            <!-- Admin Login Form (Hidden by Default) -->
-            <div id="adminLogin" class="block-cube" style="display: none;">
-                <form autocomplete="off">
-                    <div class="control block-cube block-input">
-                        <input type="text" id="username" placeholder="Username">
-                    </div>
-                    <div class="control block-cube block-input">
-                        <input type="password" id="password" placeholder="Password">
-                    </div>
-                    <button type="button" id="loginButton" class="btn block-cube block-cube-hover">
-                        <div class="bg-top"><div class="bg-inner"></div></div>
-                        <div class="bg-right"><div class="bg-inner"></div></div>
-                        <div class="bg"><div class="bg-inner"></div></div>
-                        <div class="text">Log In</div>
-                    </button>
-                </form>
-            </div>
-        </div>
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('change', function () {
+            if (this.checked) {
+                body.classList.replace('light-mode', 'dark-mode');
+                localStorage.setItem('theme', 'dark-mode');
+            } else {
+                body.classList.replace('dark-mode', 'light-mode');
+                localStorage.setItem('theme', 'light-mode');
+            }
+        });
+    }
 
-        <div class="navigation">
-            <button class="button-85" onclick="window.location.href='index.html'">Home</button>
-            <button class="button-85" onclick="window.location.href='Projects.html'">Projects</button>
-        </div>
+    // Admin Login Functionality with Firebase Authentication
+    const loginButton = document.getElementById('loginButton');
+    const usernameField = document.getElementById('username');
+    const passwordField = document.getElementById('password');
 
-        <div class="info-section">
-            <h2>Internship Title</h2>
-            <p>Description of the internship experience...</p>
-        </div>
+    if (adminLogin && loginButton) {
+        loginButton.addEventListener('click', async function () {
+            const email = usernameField.value.trim();
+            const password = passwordField.value.trim();
 
-        <!-- Upload Section - Only visible to admin -->
-        <div class="upload-container" style="display:none;">
-            <h2>Upload Files</h2>
-            <input type="file" id="fileUploadInternships" multiple>
-            <div contenteditable="true" id="fileTitleInternships" class="editable-div" placeholder="Enter file title">Enter file title</div>
-            <div class="popup-toolbar" id="popupToolbarTitleInternships">
-                <button type="button" title="Bold"><b>B</b></button>
-                <button type="button" title="Italic"><i>I</i></button>
-                <button type="button" title="Underline"><u>U</u></button>
-                <button type="button" title="Increase Font Size">A+</button>
-                <button type="button" title="Decrease Font Size">A-</button>
-                <input type="color" title="Font Color">
-            </div>
-            <div contenteditable="true" id="fileDescriptionInternships" class="editable-div" placeholder="Enter file description">Enter file description</div>
-            <div class="popup-toolbar" id="popupToolbarDescriptionInternships">
-                <button type="button" title="Bold"><b>B</b></button>
-                <button type="button" title="Italic"><i>I</i></button>
-                <button type="button" title="Underline"><u>U</u></button>
-                <button type="button" title="Increase Font Size">A+</button>
-                <button type="button" title="Decrease Font Size">A-</button>
-                <input type="color" title="Font Color">
-            </div>
-            <button id="uploadButtonInternships" class="button-85">Upload</button>
-        </div>
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                isAdmin = true;
+                localStorage.setItem('isAdmin', 'true');
+                body.classList.add('admin-enabled');
+                toggleDeleteButtons(); // Enable delete buttons for admin
+                alert('Login successful');
+                usernameField.value = '';
+                passwordField.value = '';
+            } catch (error) {
+                console.error("Authentication failed:", error.message);
+                alert('Invalid credentials. Please try again.');
+            }
+        });
+    }
 
-        <!-- Preview Section for Uploaded Files -->
-        <div id="uploadPreviewInternships" class="upload-preview"></div>
-    </div>
+    // Show or hide delete buttons based on admin status
+    function toggleDeleteButtons() {
+        document.querySelectorAll('.delete-button').forEach(button => {
+            button.style.display = isAdmin ? 'block' : 'none';
+        });
+    }
 
-    <script src="script.js"></script>
-</body>
-</html>
+    // Load previews and manage upload functionality on Projects and Internships pages
+    const uploadButtonInternships = document.getElementById('uploadButtonInternships');
+    const uploadPreviewInternships = document.getElementById('uploadPreviewInternships');
+    if (uploadButtonInternships && uploadPreviewInternships) {
+        uploadButtonInternships.addEventListener('click', function () {
+            handleFileUpload('fileUploadInternships', 'fileTitleInternships', 'fileDescriptionInternships', uploadPreviewInternships);
+        });
+        loadPreviewsFromFirebase(uploadPreviewInternships);
+    }
+
+    const uploadButtonProjects = document.getElementById('uploadButtonProjects');
+    const uploadPreviewProjects = document.getElementById('uploadPreviewProjects');
+    if (uploadButtonProjects && uploadPreviewProjects) {
+        uploadButtonProjects.addEventListener('click', function () {
+            handleFileUpload('fileUploadProjects', 'fileTitleProjects', 'fileDescriptionProjects', uploadPreviewProjects);
+        });
+        loadPreviewsFromFirebase(uploadPreviewProjects);
+    }
+
+    // Function to handle file uploads and save to Firebase
+    async function handleFileUpload(fileUploadId, fileTitleId, fileDescriptionId, previewContainer) {
+        const fileUpload = document.getElementById(fileUploadId);
+        const fileTitle = document.getElementById(fileTitleId).innerHTML;
+        const fileDescription = document.getElementById(fileDescriptionId).innerHTML;
+
+        if (fileUpload.files.length > 0) {
+            Array.from(fileUpload.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = async function (e) {
+                    const fileUrl = e.target.result;
+                    await saveToFirebase(fileTitle, fileDescription, fileUrl);
+                    loadPreviewsFromFirebase(previewContainer);
+                };
+                reader.readAsDataURL(file);
+            });
+        } else if (fileTitle || fileDescription) {
+            await saveToFirebase(fileTitle, fileDescription, null);
+            loadPreviewsFromFirebase(previewContainer);
+        }
+    }
+
+    // Save a preview to Firebase
+    async function saveToFirebase(title, description, fileUrl) {
+        await addDoc(collection(db, "previews"), {
+            title,
+            description,
+            fileUrl,
+            timestamp: new Date(),
+        });
+    }
+
+    // Load all previews from Firebase
+    function loadPreviewsFromFirebase(previewContainer) {
+        const previewsQuery = query(collection(db, "previews"), orderBy("timestamp", "asc"));
+        onSnapshot(previewsQuery, (snapshot) => {
+            previewContainer.innerHTML = ""; 
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const previewGroup = createPreview(null, data.title, data.description, data.fileUrl, previewContainer);
+                const deleteButton = createDeleteButton(previewGroup, doc.id);
+                previewGroup.appendChild(deleteButton);
+            });
+        });
+    }
+
+    // Function to create a delete button for each preview group
+    function createDeleteButton(previewGroup, docId) {
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'X';
+        deleteButton.classList.add('delete-button');
+        deleteButton.style.display = isAdmin ? 'block' : 'none';
+
+        deleteButton.addEventListener('click', async function () {
+            if (!isAdmin) {
+                alert('You are not authorized to delete items.');
+                return;
+            }
+            await deleteDoc(doc(db, "previews", docId));
+            previewGroup.remove();
+        });
+        return deleteButton;
+    }
+
+    function createPreview(fileName, title, description, fileUrl, previewContainer) {
+        const previewGroup = document.createElement('div');
+        previewGroup.classList.add('preview-group');
+
+        const previewHeader = document.createElement('div');
+        previewHeader.classList.add('preview-header');
+
+        const titleElem = document.createElement('h4');
+        titleElem.innerHTML = title || 'No Title';
+        previewHeader.appendChild(titleElem);
+
+        const descriptionElem = document.createElement('p');
+        descriptionElem.innerHTML = description || 'No Description';
+        previewGroup.appendChild(previewHeader);
+        previewGroup.appendChild(descriptionElem);
+
+        if (fileUrl) {
+            const previewItem = document.createElement('div');
+            previewItem.classList.add('preview-item');
+            if (fileUrl.startsWith('data:image')) {
+                const img = document.createElement('img');
+                img.src = fileUrl;
+                img.alt = fileName;
+                previewItem.appendChild(img);
+            } else if (fileUrl.startsWith('data:video')) {
+                const video = document.createElement('video');
+                video.src = fileUrl;
+                video.controls = true;
+                previewItem.appendChild(video);
+            }
+            previewGroup.appendChild(previewItem);
+        }
+
+        previewContainer.appendChild(previewGroup);
+    }
+
+    // Set up popup toolbar for each editable field
+    setupPopupToolbar('fileTitleInternships', 'popupToolbarTitleInternships');
+    setupPopupToolbar('fileDescriptionInternships', 'popupToolbarDescriptionInternships');
+    setupPopupToolbar('fileTitleProjects', 'popupToolbarTitleProjects');
+    setupPopupToolbar('fileDescriptionProjects', 'popupToolbarDescriptionProjects');
+});
