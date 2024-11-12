@@ -26,8 +26,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const body = document.body;
     const loadingScreen = document.getElementById('loadingScreen');
-    const isAdminPage = document.getElementById('adminLogin'); // Admin only on specific pages
-    let isAdmin = false;
+    const adminLoginForm = document.getElementById('adminLogin'); // Admin login element
+    let isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+    // Show or hide upload containers based on admin status
+    function toggleUploadContainers() {
+        document.querySelectorAll('.upload-container').forEach(container => {
+            container.style.display = isAdmin ? 'block' : 'none';
+        });
+    }
+
+    // Initial setup: toggle upload containers based on saved admin status
+    toggleUploadContainers();
 
     // Loading Screen Logic
     window.addEventListener('load', function () {
@@ -58,13 +68,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Admin Login Functionality with Firebase Authentication
+    // Admin Login Functionality
     const loginButton = document.getElementById('loginButton');
     const usernameField = document.getElementById('username');
     const passwordField = document.getElementById('password');
 
-    // Only execute admin login if on Projects or Internships pages
-    if (isAdminPage && loginButton) {
+    if (loginButton && adminLoginForm) {
         loginButton.addEventListener('click', async function () {
             const email = usernameField.value.trim();
             const password = passwordField.value.trim();
@@ -74,11 +83,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 isAdmin = true;
                 localStorage.setItem('isAdmin', 'true');
                 body.classList.add('admin-enabled');
-                toggleDeleteButtons();
+                toggleUploadContainers();
                 alert('Login successful');
                 usernameField.value = '';
                 passwordField.value = '';
-                isAdminPage.style.display = 'none';
             } catch (error) {
                 console.error("Authentication failed:", error.message);
                 alert('Invalid credentials. Please try again.');
@@ -86,6 +94,20 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Logout Logic: optional if admin wants to logout
+    // Example: Set up a button with id 'logoutButton' in HTML
+    const logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function () {
+            isAdmin = false;
+            localStorage.removeItem('isAdmin');
+            body.classList.remove('admin-enabled');
+            toggleUploadContainers();
+            alert('Logged out successfully');
+        });
+    }
+
+    // Toggle delete buttons for admin access
     function toggleDeleteButtons() {
         document.querySelectorAll('.delete-button').forEach(button => {
             button.style.display = isAdmin ? 'block' : 'none';
