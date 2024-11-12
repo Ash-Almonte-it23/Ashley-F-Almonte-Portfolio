@@ -1,18 +1,19 @@
-// Import Firebase SDK functions
+// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "firebase/firestore";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Firebase configuration
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "YOUR_MEASUREMENT_ID"
+  apiKey: "AIzaSyCfKdtYUZ1RfxPf5emKvQFzP-Q7_xgNzDM",
+  authDomain: "ashley-f-almonte-portfolio.firebaseapp.com",
+  projectId: "ashley-f-almonte-portfolio",
+  storageBucket: "ashley-f-almonte-portfolio.firebasestorage.app",
+  messagingSenderId: "893010820221",
+  appId: "1:893010820221:web:a2f4b3f775ad9c4c05c514",
+  measurementId: "G-CPKDJ1XS7H"
 };
 
 // Initialize Firebase
