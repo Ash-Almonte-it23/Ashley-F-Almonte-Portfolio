@@ -5,11 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
     <title>Projects</title>
-
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 </head>
 <body>
     <!-- Loading Screen -->
@@ -27,8 +22,8 @@
                 </label>
             </div>
 
-            <!-- Admin Login Form (Hidden by Default) -->
-            <div id="adminLogin" class="block-cube" style="display: none;">
+            <!-- Admin Login Form -->
+            <div id="adminLogin" class="block-cube">
                 <form autocomplete="off">
                     <div class="control block-cube block-input">
                         <input type="text" id="username" placeholder="Username">
@@ -49,7 +44,6 @@
         <div class="navigation">
             <button class="button-85" onclick="window.location.href='index.html'">Home</button>
             <button class="button-85" onclick="window.location.href='Internships.html'">Internships</button>
-            <!-- Adjusted 404 button with smaller size and positioned below -->
             <button class="button-85 smaller-button" onclick="window.location.href='404.html'">404 Page</button>        
         </div>
 
