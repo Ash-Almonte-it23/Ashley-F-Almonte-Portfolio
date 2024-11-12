@@ -2,30 +2,31 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "firebase/firestore";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";  // Added auth functions
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCfKdtYUZ1RfxPf5emKvQFzP-Q7_xgNzDM",
-  authDomain: "ashley-f-almonte-portfolio.firebaseapp.com",
-  projectId: "ashley-f-almonte-portfolio",
-  storageBucket: "ashley-f-almonte-portfolio.firebasestorage.app",
-  messagingSenderId: "893010820221",
-  appId: "1:893010820221:web:a2f4b3f775ad9c4c05c514",
-  measurementId: "G-CPKDJ1XS7H"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID",
+  measurementId: "YOUR_MEASUREMENT_ID"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
-const auth = getAuth(app);  // Initialize Firebase Auth
+const auth = getAuth(app);
 
 document.addEventListener('DOMContentLoaded', function () {
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const body = document.body;
     const loadingScreen = document.getElementById('loadingScreen');
-    let isAdmin = false;  // Track admin status
+    const isAdminPage = document.getElementById('adminLogin'); // Admin only on specific pages
+    let isAdmin = false;
 
     // Loading Screen Logic
     window.addEventListener('load', function () {
@@ -40,23 +41,17 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Dark Mode Toggle Logic
-    let currentTheme = localStorage.getItem('theme');
-    if (!currentTheme) {
-        currentTheme = 'light-mode';
-        localStorage.setItem('theme', 'light-mode');
-    }
+    let currentTheme = localStorage.getItem('theme') || 'light-mode';
     body.classList.add(currentTheme);
     darkModeToggle.checked = (currentTheme === 'dark-mode');
 
     if (darkModeToggle) {
         darkModeToggle.addEventListener('change', function () {
             if (this.checked) {
-                body.classList.add('dark-mode');
-                body.classList.remove('light-mode');
+                body.classList.replace('light-mode', 'dark-mode');
                 localStorage.setItem('theme', 'dark-mode');
             } else {
-                body.classList.add('light-mode');
-                body.classList.remove('dark-mode');
+                body.classList.replace('dark-mode', 'light-mode');
                 localStorage.setItem('theme', 'light-mode');
             }
         });
@@ -67,7 +62,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const usernameField = document.getElementById('username');
     const passwordField = document.getElementById('password');
 
-    if (loginButton) {
+    // Only execute admin login if on Projects or Internships pages
+    if (isAdminPage && loginButton) {
         loginButton.addEventListener('click', async function () {
             const email = usernameField.value.trim();
             const password = passwordField.value.trim();
@@ -76,12 +72,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 isAdmin = true;
                 localStorage.setItem('isAdmin', 'true');
-                document.body.classList.add('admin-enabled');
+                body.classList.add('admin-enabled');
                 toggleDeleteButtons();
                 alert('Login successful');
                 usernameField.value = '';
                 passwordField.value = '';
-                document.getElementById('adminLogin').style.display = 'none';
+                isAdminPage.style.display = 'none';
             } catch (error) {
                 console.error("Authentication failed:", error.message);
                 alert('Invalid credentials. Please try again.');
@@ -137,19 +133,25 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Set up upload preview for Internships
     const uploadButtonInternships = document.getElementById('uploadButtonInternships');
     const uploadPreviewInternships = document.getElementById('uploadPreviewInternships');
-    uploadButtonInternships.addEventListener('click', function () {
-        handleFileUpload('fileUploadInternships', 'fileTitleInternships', 'fileDescriptionInternships', uploadPreviewInternships);
-    });
-    loadPreviewsFromFirebase(uploadPreviewInternships);
+    if (uploadButtonInternships && uploadPreviewInternships) {
+        uploadButtonInternships.addEventListener('click', function () {
+            handleFileUpload('fileUploadInternships', 'fileTitleInternships', 'fileDescriptionInternships', uploadPreviewInternships);
+        });
+        loadPreviewsFromFirebase(uploadPreviewInternships);
+    }
 
+    // Set up upload preview for Projects
     const uploadButtonProjects = document.getElementById('uploadButtonProjects');
     const uploadPreviewProjects = document.getElementById('uploadPreviewProjects');
-    uploadButtonProjects.addEventListener('click', function () {
-        handleFileUpload('fileUploadProjects', 'fileTitleProjects', 'fileDescriptionProjects', uploadPreviewProjects);
-    });
-    loadPreviewsFromFirebase(uploadPreviewProjects);
+    if (uploadButtonProjects && uploadPreviewProjects) {
+        uploadButtonProjects.addEventListener('click', function () {
+            handleFileUpload('fileUploadProjects', 'fileTitleProjects', 'fileDescriptionProjects', uploadPreviewProjects);
+        });
+        loadPreviewsFromFirebase(uploadPreviewProjects);
+    }
 
     // Handles file uploads and stores them in Firebase
     async function handleFileUpload(fileUploadId, fileTitleId, fileDescriptionId, previewContainer) {
@@ -209,6 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
         previewContainer.appendChild(previewGroup);
     }
 
+    // Set up popup toolbar for each editable field
     setupPopupToolbar('fileTitleInternships', 'popupToolbarTitleInternships');
     setupPopupToolbar('fileDescriptionInternships', 'popupToolbarDescriptionInternships');
     setupPopupToolbar('fileTitleProjects', 'popupToolbarTitleProjects');
