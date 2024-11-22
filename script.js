@@ -158,12 +158,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Function to create delete button
-    function createDeleteButton(previewGroup, docId, pageType) {
+    function createDeleteButton(previewGroup, docId, collectionName) {
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'X';
         deleteButton.classList.add('delete-button');
         deleteButton.style.display = isAdmin ? 'block' : 'none';
-        deleteButton.disabled = !isAdmin;
 
         deleteButton.addEventListener('click', async function () {
             if (!isAdmin) {
@@ -172,11 +171,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             try {
-                await deleteDoc(doc(db, pageType, docId));
+                await deleteDoc(doc(db, collectionName, docId));
                 previewGroup.remove();
                 alert('Item deleted successfully.');
             } catch (error) {
-                console.error('Error deleting item:', error);
+                console.error('Error deleting document: ', error);
                 alert('Error deleting item. Please try again.');
             }
         });
@@ -185,47 +184,47 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // File Upload Logic and Preview Loading (with Firebase integration)
-    async function handleFileUpload(fileUploadId, fileTitleId, fileDescriptionId, previewContainer, pageType) {
+    async function handleFileUpload(fileUploadId, titleId, descriptionId, previewContainer, collectionName) {
         if (!isAdmin) return;
 
         const fileUpload = document.getElementById(fileUploadId);
-        const fileTitle = document.getElementById(fileTitleId).innerHTML.trim();
-        const fileDescription = document.getElementById(fileDescriptionId).innerHTML.trim();
+        const title = document.getElementById(titleId).innerText.trim();
+        const description = document.getElementById(descriptionId).innerText.trim();
 
         if (fileUpload.files.length > 0) {
-            Array.from(fileUpload.files).forEach(async (file) => {
+            Array.from(fileUpload.files).forEach(async file => {
                 try {
-                    const storageRef = ref(storage, `${pageType}/${file.name}`);
+                    const storageRef = ref(storage, `${collectionName}/${file.name}`);
                     const snapshot = await uploadBytes(storageRef, file);
                     const fileUrl = await getDownloadURL(snapshot.ref);
 
-                    await addDoc(collection(db, pageType), {
-                        title: fileTitle || 'No Title',
-                        description: fileDescription || 'No Description',
+                    await addDoc(collection(db, collectionName), {
+                        title: title || 'No Title',
+                        description: description || 'No Description',
                         fileUrl,
-                        timestamp: new Date(),
+                        timestamp: new Date()
                     });
 
-                    loadPreviewsFromFirebase(previewContainer, pageType);
+                    loadPreviewsFromFirebase(previewContainer, collectionName);
                     alert('File uploaded successfully.');
                 } catch (error) {
-                    console.error('Error uploading file:', error);
+                    console.error('Error uploading file: ', error);
                     alert('Error uploading file. Please try again.');
                 }
             });
-        } else if (fileTitle || fileDescription) {
+        } else if (title || description) {
             try {
-                await addDoc(collection(db, pageType), {
-                    title: fileTitle || 'No Title',
-                    description: fileDescription || 'No Description',
+                await addDoc(collection(db, collectionName), {
+                    title: title || 'No Title',
+                    description: description || 'No Description',
                     fileUrl: null,
-                    timestamp: new Date(),
+                    timestamp: new Date()
                 });
 
-                loadPreviewsFromFirebase(previewContainer, pageType);
+                loadPreviewsFromFirebase(previewContainer, collectionName);
                 alert('Metadata uploaded successfully.');
             } catch (error) {
-                console.error('Error uploading metadata:', error);
+                console.error('Error uploading metadata: ', error);
                 alert('Error uploading metadata. Please try again.');
             }
         }
@@ -234,13 +233,13 @@ document.addEventListener('DOMContentLoaded', function () {
         toggleDeleteButtons();
     }
 
-    function loadPreviewsFromFirebase(previewContainer, pageType) {
-        const previewsQuery = query(collection(db, pageType), orderBy('timestamp', 'desc'));
+    function loadPreviewsFromFirebase(previewContainer, collectionName) {
+        const q = query(collection(db, collectionName), orderBy("timestamp", "desc"));
 
-        onSnapshot(previewsQuery, (snapshot) => {
+        onSnapshot(q, snapshot => {
             previewContainer.innerHTML = '';
 
-            snapshot.forEach((doc) => {
+            snapshot.forEach(doc => {
                 const data = doc.data();
                 const previewGroup = document.createElement('div');
                 previewGroup.classList.add('preview-group');
@@ -249,16 +248,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 previewHeader.classList.add('preview-header');
 
                 const titleElem = document.createElement('h4');
-                titleElem.innerHTML = data.title || 'No Title';
+                titleElem.innerText = data.title || 'No Title';
                 previewHeader.appendChild(titleElem);
 
-                const deleteButton = createDeleteButton(previewGroup, doc.id, pageType);
+                const deleteButton = createDeleteButton(previewGroup, doc.id, collectionName);
                 previewHeader.appendChild(deleteButton);
 
                 previewGroup.appendChild(previewHeader);
 
                 const descriptionElem = document.createElement('p');
-                descriptionElem.innerHTML = data.description || 'No Description';
+                descriptionElem.innerText = data.description || 'No Description';
                 previewGroup.appendChild(descriptionElem);
 
                 if (data.fileUrl) {
@@ -284,4 +283,22 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
+
+    const uploadButtonProjects = document.getElementById('uploadButtonProjects');
+    const uploadPreviewProjects = document.getElementById('uploadPreviewProjects');
+    const uploadButtonInternships = document.getElementById('uploadButtonInternships');
+    const uploadPreviewInternships = document.getElementById('uploadPreviewInternships');
+
+    uploadButtonProjects.addEventListener('click', () => {
+        handleFileUpload('fileUploadProjects', 'fileTitleProjects', 'fileDescriptionProjects', uploadPreviewProjects, 'Projects');
+    });
+
+    uploadButtonInternships.addEventListener('click', () => {
+        handleFileUpload('fileUploadInternships', 'fileTitleInternships', 'fileDescriptionInternships', uploadPreviewInternships, 'Internships');
+    });
+
+    loadPreviewsFromFirebase(uploadPreviewProjects, 'Projects');
+    loadPreviewsFromFirebase(uploadPreviewInternships, 'Internships');
+
+    toggleDeleteButtons();
 });
