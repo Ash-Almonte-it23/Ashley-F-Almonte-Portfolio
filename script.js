@@ -1,43 +1,31 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getFirestore, collection, addDoc, deleteDoc, query, orderBy, onSnapshot } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyCfKdtYUZ1RfxPf5emKvQFzP-Q7_xgNzDM",
-  authDomain: "ashley-f-almonte-portfolio.firebaseapp.com",
-  projectId: "ashley-f-almonte-portfolio",
-  storageBucket: "ashley-f-almonte-portfolio.firebasestorage.app",
-  messagingSenderId: "893010820221",
-  appId: "1:893010820221:web:a2f4b3f775ad9c4c05c514",
-  measurementId: "G-CPKDJ1XS7H"
+    apiKey: "AIzaSyCfKdtYUZ1RfxPf5emKvQFzP-Q7_xgNzDM",
+    authDomain: "ashley-f-almonte-portfolio.firebaseapp.com",
+    projectId: "ashley-f-almonte-portfolio",
+    storageBucket: "ashley-f-almonte-portfolio.appspot.com",
+    messagingSenderId: "893010820221",
+    appId: "1:893010820221:web:a2f4b3f775ad9c4c05c514",
+    measurementId: "G-CPKDJ1XS7H",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
-const auth = getAuth(app);
+const storage = getStorage(app);
 
 document.addEventListener('DOMContentLoaded', function () {
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const body = document.body;
     const loadingScreen = document.getElementById('loadingScreen');
-    const adminLoginForm = document.getElementById('adminLogin'); // Admin login element
     let isAdmin = localStorage.getItem('isAdmin') === 'true';
-
-    // Show or hide upload containers based on admin status
-    function toggleUploadContainers() {
-        document.querySelectorAll('.upload-container').forEach(container => {
-            container.style.display = isAdmin ? 'block' : 'none';
-        });
-    }
-
-    // Initial setup: toggle upload containers based on saved admin status
-    toggleUploadContainers();
 
     // Loading Screen Logic
     window.addEventListener('load', function () {
@@ -47,22 +35,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
                 }, 1000);
-            }, 3000); // Display for 3 seconds
+            }, 1000);
         }
     });
 
     // Dark Mode Toggle Logic
-    let currentTheme = localStorage.getItem('theme') || 'light-mode';
-    body.classList.add(currentTheme);
-    darkModeToggle.checked = (currentTheme === 'dark-mode');
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme) {
+        body.classList.add(currentTheme);
+        if (currentTheme === 'dark-mode') {
+            darkModeToggle.checked = true;
+        }
+    }
 
     if (darkModeToggle) {
         darkModeToggle.addEventListener('change', function () {
             if (this.checked) {
-                body.classList.replace('light-mode', 'dark-mode');
+                body.classList.add('dark-mode');
+                body.classList.remove('light-mode');
                 localStorage.setItem('theme', 'dark-mode');
             } else {
-                body.classList.replace('dark-mode', 'light-mode');
+                body.classList.add('light-mode');
+                body.classList.remove('dark-mode');
                 localStorage.setItem('theme', 'light-mode');
             }
         });
@@ -73,170 +67,221 @@ document.addEventListener('DOMContentLoaded', function () {
     const usernameField = document.getElementById('username');
     const passwordField = document.getElementById('password');
 
-    if (loginButton && adminLoginForm) {
-        loginButton.addEventListener('click', async function () {
-            const email = usernameField.value.trim();
+    if (loginButton) {
+        loginButton.addEventListener('click', function () {
+            const username = usernameField.value.trim();
             const password = passwordField.value.trim();
 
-            try {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            if (username === 'AAadmin' && password === '2025AAadmin') {
+                alert('Login successful');
                 isAdmin = true;
                 localStorage.setItem('isAdmin', 'true');
-                body.classList.add('admin-enabled');
-                toggleUploadContainers();
-                alert('Login successful');
+                document.body.classList.add('admin-enabled');
+                document.querySelector('.upload-container').style.display = 'block';
+                toggleDeleteButtons();
                 usernameField.value = '';
                 passwordField.value = '';
-            } catch (error) {
-                console.error("Authentication failed:", error.message);
+                document.getElementById('adminLogin').style.display = 'none';
+            } else {
                 alert('Invalid credentials. Please try again.');
             }
         });
     }
 
-    // Logout Logic: optional if admin wants to logout
-    // Example: Set up a button with id 'logoutButton' in HTML
-    const logoutButton = document.getElementById('logoutButton');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', function () {
-            isAdmin = false;
-            localStorage.removeItem('isAdmin');
-            body.classList.remove('admin-enabled');
-            toggleUploadContainers();
-            alert('Logged out successfully');
+    // Popup Toolbar Setup
+    function setupPopupToolbar(containerId, toolbarId) {
+        const container = document.getElementById(containerId);
+        const toolbar = document.getElementById(toolbarId);
+
+        if (!container || !toolbar) {
+            console.error(`Element not found: ${containerId}, ${toolbarId}`);
+            return;
+        }
+
+        container.addEventListener('mouseup', () => {
+            const selection = window.getSelection();
+            if (selection.toString().length > 0) {
+                const containerRect = container.getBoundingClientRect();
+                toolbar.style.top = `${containerRect.top + window.scrollY - toolbar.offsetHeight - 50}px`;
+                toolbar.style.left = `${containerRect.left + window.scrollX}px`;
+                toolbar.style.display = 'block';
+            } else {
+                toolbar.style.display = 'none';
+            }
+        });
+
+        toolbar.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.execCommand(button.title.toLowerCase(), false, null);
+                toolbar.style.display = 'none';
+            });
+        });
+
+        toolbar.querySelector('input[type="color"]').addEventListener('input', (event) => {
+            document.execCommand('foreColor', false, event.target.value);
+        });
+
+        toolbar.querySelector('button[title="Increase Font Size"]').addEventListener('click', () => {
+            document.execCommand('fontSize', false, '4');
+            toolbar.style.display = 'none';
+        });
+        toolbar.querySelector('button[title="Decrease Font Size"]').addEventListener('click', () => {
+            document.execCommand('fontSize', false, '2');
+            toolbar.style.display = 'none';
+        });
+
+        document.addEventListener('mousedown', function (event) {
+            if (!toolbar.contains(event.target) && !container.contains(event.target)) {
+                toolbar.style.display = 'none';
+            }
         });
     }
 
-    // Toggle delete buttons for admin access
+    setupPopupToolbar('fileTitleInternships', 'popupToolbarTitleInternships');
+    setupPopupToolbar('fileDescriptionInternships', 'popupToolbarDescriptionInternships');
+    setupPopupToolbar('fileTitleProjects', 'popupToolbarTitleProjects');
+    setupPopupToolbar('fileDescriptionProjects', 'popupToolbarDescriptionProjects');
+
+    // Toggle delete buttons visibility and functionality based on admin status
     function toggleDeleteButtons() {
         document.querySelectorAll('.delete-button').forEach(button => {
-            button.style.display = isAdmin ? 'block' : 'none';
+            if (isAdmin) {
+                button.style.display = 'block';
+                button.disabled = false;
+                button.classList.remove('disabled');
+            } else {
+                button.style.display = 'none';
+                button.disabled = true;
+                button.classList.add('disabled');
+            }
         });
     }
 
-    // Function to create delete button for each preview group
-    function createDeleteButton(previewGroup, docId) {
+    // Function to create delete button
+    function createDeleteButton(previewGroup, docId, pageType) {
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'X';
         deleteButton.classList.add('delete-button');
         deleteButton.style.display = isAdmin ? 'block' : 'none';
+        deleteButton.disabled = !isAdmin;
 
         deleteButton.addEventListener('click', async function () {
             if (!isAdmin) {
                 alert('You are not authorized to delete items.');
                 return;
             }
-            await deleteDoc(doc(db, "previews", docId));
-            previewGroup.remove();
+
+            try {
+                await deleteDoc(doc(db, pageType, docId));
+                previewGroup.remove();
+                alert('Item deleted successfully.');
+            } catch (error) {
+                console.error('Error deleting item:', error);
+                alert('Error deleting item. Please try again.');
+            }
         });
+
         return deleteButton;
     }
 
-    // Save a preview to Firebase
-    async function saveToFirebase(title, description, fileUrl) {
-        await addDoc(collection(db, "previews"), {
-            title,
-            description,
-            fileUrl,
-            timestamp: new Date(),
-        });
-    }
+    // File Upload Logic and Preview Loading (with Firebase integration)
+    async function handleFileUpload(fileUploadId, fileTitleId, fileDescriptionId, previewContainer, pageType) {
+        if (!isAdmin) return;
 
-    // Load all previews from Firebase
-    function loadPreviewsFromFirebase(previewContainer) {
-        const previewsQuery = query(collection(db, "previews"), orderBy("timestamp", "asc"));
-        onSnapshot(previewsQuery, (snapshot) => {
-            previewContainer.innerHTML = ""; 
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const previewGroup = createPreview(null, data.title, data.description, data.fileUrl, previewContainer);
-                const deleteButton = createDeleteButton(previewGroup, doc.id);
-                previewGroup.appendChild(deleteButton);
-            });
-        });
-    }
-
-    // Set up upload preview for Internships
-    const uploadButtonInternships = document.getElementById('uploadButtonInternships');
-    const uploadPreviewInternships = document.getElementById('uploadPreviewInternships');
-    if (uploadButtonInternships && uploadPreviewInternships) {
-        uploadButtonInternships.addEventListener('click', function () {
-            handleFileUpload('fileUploadInternships', 'fileTitleInternships', 'fileDescriptionInternships', uploadPreviewInternships);
-        });
-        loadPreviewsFromFirebase(uploadPreviewInternships);
-    }
-
-    // Set up upload preview for Projects
-    const uploadButtonProjects = document.getElementById('uploadButtonProjects');
-    const uploadPreviewProjects = document.getElementById('uploadPreviewProjects');
-    if (uploadButtonProjects && uploadPreviewProjects) {
-        uploadButtonProjects.addEventListener('click', function () {
-            handleFileUpload('fileUploadProjects', 'fileTitleProjects', 'fileDescriptionProjects', uploadPreviewProjects);
-        });
-        loadPreviewsFromFirebase(uploadPreviewProjects);
-    }
-
-    // Handles file uploads and stores them in Firebase
-    async function handleFileUpload(fileUploadId, fileTitleId, fileDescriptionId, previewContainer) {
         const fileUpload = document.getElementById(fileUploadId);
-        const fileTitle = document.getElementById(fileTitleId).innerHTML;
-        const fileDescription = document.getElementById(fileDescriptionId).innerHTML;
+        const fileTitle = document.getElementById(fileTitleId).innerHTML.trim();
+        const fileDescription = document.getElementById(fileDescriptionId).innerHTML.trim();
 
         if (fileUpload.files.length > 0) {
-            Array.from(fileUpload.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = async function (e) {
-                    const fileUrl = e.target.result;
-                    await saveToFirebase(fileTitle, fileDescription, fileUrl);
-                    loadPreviewsFromFirebase(previewContainer);
-                };
-                reader.readAsDataURL(file);
+            Array.from(fileUpload.files).forEach(async (file) => {
+                try {
+                    const storageRef = ref(storage, `${pageType}/${file.name}`);
+                    const snapshot = await uploadBytes(storageRef, file);
+                    const fileUrl = await getDownloadURL(snapshot.ref);
+
+                    await addDoc(collection(db, pageType), {
+                        title: fileTitle || 'No Title',
+                        description: fileDescription || 'No Description',
+                        fileUrl,
+                        timestamp: new Date(),
+                    });
+
+                    loadPreviewsFromFirebase(previewContainer, pageType);
+                    alert('File uploaded successfully.');
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                    alert('Error uploading file. Please try again.');
+                }
             });
         } else if (fileTitle || fileDescription) {
-            await saveToFirebase(fileTitle, fileDescription, null);
-            loadPreviewsFromFirebase(previewContainer);
-        }
-    }
+            try {
+                await addDoc(collection(db, pageType), {
+                    title: fileTitle || 'No Title',
+                    description: fileDescription || 'No Description',
+                    fileUrl: null,
+                    timestamp: new Date(),
+                });
 
-    function createPreview(fileName, title, description, fileUrl, previewContainer) {
-        const previewGroup = document.createElement('div');
-        previewGroup.classList.add('preview-group');
-
-        const previewHeader = document.createElement('div');
-        previewHeader.classList.add('preview-header');
-
-        const titleElem = document.createElement('h4');
-        titleElem.innerHTML = title || 'No Title';
-        previewHeader.appendChild(titleElem);
-
-        const descriptionElem = document.createElement('p');
-        descriptionElem.innerHTML = description || 'No Description';
-        previewGroup.appendChild(previewHeader);
-        previewGroup.appendChild(descriptionElem);
-
-        if (fileUrl) {
-            const previewItem = document.createElement('div');
-            previewItem.classList.add('preview-item');
-            if (fileUrl.startsWith('data:image')) {
-                const img = document.createElement('img');
-                img.src = fileUrl;
-                img.alt = fileName;
-                previewItem.appendChild(img);
-            } else if (fileUrl.startsWith('data:video')) {
-                const video = document.createElement('video');
-                video.src = fileUrl;
-                video.controls = true;
-                previewItem.appendChild(video);
+                loadPreviewsFromFirebase(previewContainer, pageType);
+                alert('Metadata uploaded successfully.');
+            } catch (error) {
+                console.error('Error uploading metadata:', error);
+                alert('Error uploading metadata. Please try again.');
             }
-            previewGroup.appendChild(previewItem);
         }
 
-        previewContainer.appendChild(previewGroup);
+        fileUpload.value = '';
+        toggleDeleteButtons();
     }
 
-    // Set up popup toolbar for each editable field
-    setupPopupToolbar('fileTitleInternships', 'popupToolbarTitleInternships');
-    setupPopupToolbar('fileDescriptionInternships', 'popupToolbarDescriptionInternships');
-    setupPopupToolbar('fileTitleProjects', 'popupToolbarTitleProjects');
-    setupPopupToolbar('fileDescriptionProjects', 'popupToolbarDescriptionProjects');
+    function loadPreviewsFromFirebase(previewContainer, pageType) {
+        const previewsQuery = query(collection(db, pageType), orderBy('timestamp', 'desc'));
+
+        onSnapshot(previewsQuery, (snapshot) => {
+            previewContainer.innerHTML = '';
+
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const previewGroup = document.createElement('div');
+                previewGroup.classList.add('preview-group');
+
+                const previewHeader = document.createElement('div');
+                previewHeader.classList.add('preview-header');
+
+                const titleElem = document.createElement('h4');
+                titleElem.innerHTML = data.title || 'No Title';
+                previewHeader.appendChild(titleElem);
+
+                const deleteButton = createDeleteButton(previewGroup, doc.id, pageType);
+                previewHeader.appendChild(deleteButton);
+
+                previewGroup.appendChild(previewHeader);
+
+                const descriptionElem = document.createElement('p');
+                descriptionElem.innerHTML = data.description || 'No Description';
+                previewGroup.appendChild(descriptionElem);
+
+                if (data.fileUrl) {
+                    const previewItem = document.createElement('div');
+                    previewItem.classList.add('preview-item');
+
+                    if (data.fileUrl.match(/\.(jpeg|jpg|png|gif)$/)) {
+                        const img = document.createElement('img');
+                        img.src = data.fileUrl;
+                        img.alt = data.title;
+                        previewItem.appendChild(img);
+                    } else if (data.fileUrl.match(/\.(mp4|webm|ogg)$/)) {
+                        const video = document.createElement('video');
+                        video.src = data.fileUrl;
+                        video.controls = true;
+                        previewItem.appendChild(video);
+                    }
+
+                    previewGroup.appendChild(previewItem);
+                }
+
+                previewContainer.appendChild(previewGroup);
+            });
+        });
+    }
 });
