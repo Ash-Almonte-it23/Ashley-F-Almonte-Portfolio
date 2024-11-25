@@ -1,31 +1,12 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, addDoc, deleteDoc, query, orderBy, onSnapshot } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyCfKdtYUZ1RfxPf5emKvQFzP-Q7_xgNzDM",
-    authDomain: "ashley-f-almonte-portfolio.firebaseapp.com",
-    projectId: "ashley-f-almonte-portfolio",
-    storageBucket: "ashley-f-almonte-portfolio.appspot.com",
-    messagingSenderId: "893010820221",
-    appId: "1:893010820221:web:a2f4b3f775ad9c4c05c514",
-    measurementId: "G-CPKDJ1XS7H",
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
-
 document.addEventListener('DOMContentLoaded', function () {
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const body = document.body;
     const loadingScreen = document.getElementById('loadingScreen');
     let isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+    const githubToken = 'YOUR_PERSONAL_ACCESS_TOKEN'; // Replace with your GitHub token
+    const repoName = 'Ashley-F-Almonte-Portfolio';
+    const owner = 'ash-almonte-it23';
 
     // Loading Screen Logic
     window.addEventListener('load', function () {
@@ -142,6 +123,118 @@ document.addEventListener('DOMContentLoaded', function () {
     setupPopupToolbar('fileTitleProjects', 'popupToolbarTitleProjects');
     setupPopupToolbar('fileDescriptionProjects', 'popupToolbarDescriptionProjects');
 
+    // GitHub Upload Functionality
+    async function handleFileUpload(fileUploadId, fileTitleId, fileDescriptionId, previewContainer, pageType) {
+        if (!isAdmin) return;
+
+        const fileUpload = document.getElementById(fileUploadId);
+        const fileTitle = document.getElementById(fileTitleId).innerHTML.trim();
+        const fileDescription = document.getElementById(fileDescriptionId).innerHTML.trim();
+
+        if (fileUpload.files.length > 0) {
+            Array.from(fileUpload.files).forEach(async (file) => {
+                try {
+                    const filePath = `${pageType}/${file.name}`;
+                    const base64Content = await fileToBase64(file);
+
+                    await uploadFileToGitHub(filePath, base64Content, `Uploaded: ${fileTitle}`);
+                    const fileUrl = `https://raw.githubusercontent.com/${owner}/${repoName}/main/${filePath}`;
+
+                    createPreview(file.name, fileTitle, fileDescription, fileUrl, previewContainer, pageType);
+                    alert('File uploaded successfully.');
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                    alert('Error uploading file. Please try again.');
+                }
+            });
+        } else if (fileTitle || fileDescription) {
+            alert('Please select a file to upload.');
+        }
+
+        fileUpload.value = ''; // Reset file input
+    }
+
+    async function uploadFileToGitHub(path, content, message) {
+        const url = `https://api.github.com/repos/${owner}/${repoName}/contents/${path}`;
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${githubToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                message,
+                content,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`GitHub API error: ${response.statusText}`);
+        }
+    }
+
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function createPreview(fileName, title, description, fileUrl, previewContainer, pageType) {
+        const previewGroup = document.createElement('div');
+        previewGroup.classList.add('preview-group');
+
+        const previewHeader = document.createElement('div');
+        previewHeader.classList.add('preview-header');
+
+        const titleElem = document.createElement('h4');
+        titleElem.innerHTML = title || 'No Title';
+        previewHeader.appendChild(titleElem);
+
+        const descriptionElem = document.createElement('p');
+        descriptionElem.innerHTML = description || 'No Description';
+        previewHeader.appendChild(descriptionElem);
+
+        if (fileUrl) {
+            const previewItem = document.createElement('div');
+            previewItem.classList.add('preview-item');
+
+            if (fileUrl.match(/\.(jpeg|jpg|png|gif)$/)) {
+                const img = document.createElement('img');
+                img.src = fileUrl;
+                img.alt = fileName;
+                previewItem.appendChild(img);
+            } else if (fileUrl.match(/\.(mp4|webm|ogg)$/)) {
+                const video = document.createElement('video');
+                video.src = fileUrl;
+                video.controls = true;
+                previewItem.appendChild(video);
+            }
+
+            previewGroup.appendChild(previewItem);
+        }
+
+        previewContainer.appendChild(previewGroup);
+    }
+
+    const uploadButtonInternships = document.getElementById('uploadButtonInternships');
+    const uploadPreviewInternships = document.getElementById('uploadPreviewInternships');
+    if (uploadButtonInternships) {
+        uploadButtonInternships.addEventListener('click', function () {
+            handleFileUpload('fileUploadInternships', 'fileTitleInternships', 'fileDescriptionInternships', uploadPreviewInternships, 'Internships');
+        });
+    }
+
+    const uploadButtonProjects = document.getElementById('uploadButtonProjects');
+    const uploadPreviewProjects = document.getElementById('uploadPreviewProjects');
+    if (uploadButtonProjects) {
+        uploadButtonProjects.addEventListener('click', function () {
+            handleFileUpload('fileUploadProjects', 'fileTitleProjects', 'fileDescriptionProjects', uploadPreviewProjects, 'Projects');
+        });
+    }
+
     // Toggle delete buttons visibility and functionality based on admin status
     function toggleDeleteButtons() {
         document.querySelectorAll('.delete-button').forEach(button => {
@@ -156,149 +249,4 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-
-    // Function to create delete button
-    function createDeleteButton(previewGroup, docId, collectionName) {
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'X';
-        deleteButton.classList.add('delete-button');
-        deleteButton.style.display = isAdmin ? 'block' : 'none';
-
-        deleteButton.addEventListener('click', async function () {
-            if (!isAdmin) {
-                alert('You are not authorized to delete items.');
-                return;
-            }
-
-            try {
-                await deleteDoc(doc(db, collectionName, docId));
-                previewGroup.remove();
-                alert('Item deleted successfully.');
-            } catch (error) {
-                console.error('Error deleting document: ', error);
-                alert('Error deleting item. Please try again.');
-            }
-        });
-
-        return deleteButton;
-    }
-
-    // File Upload Logic and Preview Loading (with Firebase integration)
-    async function handleFileUpload(fileUploadId, titleId, descriptionId, previewContainer, collectionName) {
-        if (!isAdmin) return;
-
-        const fileUpload = document.getElementById(fileUploadId);
-        const title = document.getElementById(titleId).innerText.trim();
-        const description = document.getElementById(descriptionId).innerText.trim();
-
-        if (fileUpload.files.length > 0) {
-            Array.from(fileUpload.files).forEach(async file => {
-                try {
-                    const storageRef = ref(storage, `${collectionName}/${file.name}`);
-                    const snapshot = await uploadBytes(storageRef, file);
-                    const fileUrl = await getDownloadURL(snapshot.ref);
-
-                    await addDoc(collection(db, collectionName), {
-                        title: title || 'No Title',
-                        description: description || 'No Description',
-                        fileUrl,
-                        timestamp: new Date()
-                    });
-
-                    loadPreviewsFromFirebase(previewContainer, collectionName);
-                    alert('File uploaded successfully.');
-                } catch (error) {
-                    console.error('Error uploading file: ', error);
-                    alert('Error uploading file. Please try again.');
-                }
-            });
-        } else if (title || description) {
-            try {
-                await addDoc(collection(db, collectionName), {
-                    title: title || 'No Title',
-                    description: description || 'No Description',
-                    fileUrl: null,
-                    timestamp: new Date()
-                });
-
-                loadPreviewsFromFirebase(previewContainer, collectionName);
-                alert('Metadata uploaded successfully.');
-            } catch (error) {
-                console.error('Error uploading metadata: ', error);
-                alert('Error uploading metadata. Please try again.');
-            }
-        }
-
-        fileUpload.value = '';
-        toggleDeleteButtons();
-    }
-
-    function loadPreviewsFromFirebase(previewContainer, collectionName) {
-        const q = query(collection(db, collectionName), orderBy("timestamp", "desc"));
-
-        onSnapshot(q, snapshot => {
-            previewContainer.innerHTML = '';
-
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const previewGroup = document.createElement('div');
-                previewGroup.classList.add('preview-group');
-
-                const previewHeader = document.createElement('div');
-                previewHeader.classList.add('preview-header');
-
-                const titleElem = document.createElement('h4');
-                titleElem.innerText = data.title || 'No Title';
-                previewHeader.appendChild(titleElem);
-
-                const deleteButton = createDeleteButton(previewGroup, doc.id, collectionName);
-                previewHeader.appendChild(deleteButton);
-
-                previewGroup.appendChild(previewHeader);
-
-                const descriptionElem = document.createElement('p');
-                descriptionElem.innerText = data.description || 'No Description';
-                previewGroup.appendChild(descriptionElem);
-
-                if (data.fileUrl) {
-                    const previewItem = document.createElement('div');
-                    previewItem.classList.add('preview-item');
-
-                    if (data.fileUrl.match(/\.(jpeg|jpg|png|gif)$/)) {
-                        const img = document.createElement('img');
-                        img.src = data.fileUrl;
-                        img.alt = data.title;
-                        previewItem.appendChild(img);
-                    } else if (data.fileUrl.match(/\.(mp4|webm|ogg)$/)) {
-                        const video = document.createElement('video');
-                        video.src = data.fileUrl;
-                        video.controls = true;
-                        previewItem.appendChild(video);
-                    }
-
-                    previewGroup.appendChild(previewItem);
-                }
-
-                previewContainer.appendChild(previewGroup);
-            });
-        });
-    }
-
-    const uploadButtonProjects = document.getElementById('uploadButtonProjects');
-    const uploadPreviewProjects = document.getElementById('uploadPreviewProjects');
-    const uploadButtonInternships = document.getElementById('uploadButtonInternships');
-    const uploadPreviewInternships = document.getElementById('uploadPreviewInternships');
-
-    uploadButtonProjects.addEventListener('click', () => {
-        handleFileUpload('fileUploadProjects', 'fileTitleProjects', 'fileDescriptionProjects', uploadPreviewProjects, 'Projects');
-    });
-
-    uploadButtonInternships.addEventListener('click', () => {
-        handleFileUpload('fileUploadInternships', 'fileTitleInternships', 'fileDescriptionInternships', uploadPreviewInternships, 'Internships');
-    });
-
-    loadPreviewsFromFirebase(uploadPreviewProjects, 'Projects');
-    loadPreviewsFromFirebase(uploadPreviewInternships, 'Internships');
-
-    toggleDeleteButtons();
 });
