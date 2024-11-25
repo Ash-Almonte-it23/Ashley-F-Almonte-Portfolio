@@ -4,9 +4,30 @@ document.addEventListener('DOMContentLoaded', function () {
     const loadingScreen = document.getElementById('loadingScreen');
     let isAdmin = localStorage.getItem('isAdmin') === 'true';
 
+    const GITHUB_API_URL = "https://api.github.com";
     const githubToken = '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'; // Replace with your GitHub token
     const repoName = 'Ashley-F-Almonte-Portfolio';
     const owner = 'ash-almonte-it23';
+
+    // Helper function for GitHub API requests
+    async function githubApiRequest(endpoint, method = "GET", body = null) {
+        const headers = {
+            "Authorization": `Bearer ${GITHUB_TOKEN}`,
+            "Accept": "application/vnd.github.v3+json",
+        };
+
+        const response = await fetch(`${GITHUB_API_URL}${endpoint}`, {
+            method,
+            headers,
+            body: body ? JSON.stringify(body) : null,
+        });
+
+        if (!response.ok) {
+            console.error("GitHub API error:", response.statusText);
+            return null;
+        }
+        return response.json();
+    }
 
     // Loading Screen Logic
     window.addEventListener('load', function () {
@@ -69,6 +90,21 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Toggle delete buttons visibility and functionality based on admin status
+    function toggleDeleteButtons() {
+        document.querySelectorAll('.delete-button').forEach(button => {
+            if (isAdmin) {
+                button.style.display = 'block';
+                button.disabled = false;
+                button.classList.remove('disabled');
+            } else {
+                button.style.display = 'none';
+                button.disabled = true;
+                button.classList.add('disabled');
+            }
+        });
+    }
+
     // Popup Toolbar Setup
     function setupPopupToolbar(containerId, toolbarId) {
         const container = document.getElementById(containerId);
@@ -102,15 +138,6 @@ document.addEventListener('DOMContentLoaded', function () {
             document.execCommand('foreColor', false, event.target.value);
         });
 
-        toolbar.querySelector('button[title="Increase Font Size"]').addEventListener('click', () => {
-            document.execCommand('fontSize', false, '4');
-            toolbar.style.display = 'none';
-        });
-        toolbar.querySelector('button[title="Decrease Font Size"]').addEventListener('click', () => {
-            document.execCommand('fontSize', false, '2');
-            toolbar.style.display = 'none';
-        });
-
         document.addEventListener('mousedown', function (event) {
             if (!toolbar.contains(event.target) && !container.contains(event.target)) {
                 toolbar.style.display = 'none';
@@ -123,108 +150,84 @@ document.addEventListener('DOMContentLoaded', function () {
     setupPopupToolbar('fileTitleProjects', 'popupToolbarTitleProjects');
     setupPopupToolbar('fileDescriptionProjects', 'popupToolbarDescriptionProjects');
 
-    // GitHub Upload Functionality
+    // File Upload Logic with GitHub API Integration
     async function handleFileUpload(fileUploadId, fileTitleId, fileDescriptionId, previewContainer, pageType) {
         if (!isAdmin) return;
 
         const fileUpload = document.getElementById(fileUploadId);
-        const fileTitle = document.getElementById(fileTitleId).innerHTML.trim();
-        const fileDescription = document.getElementById(fileDescriptionId).innerHTML.trim();
+        const fileTitle = document.getElementById(fileTitleId).innerHTML;
+        const fileDescription = document.getElementById(fileDescriptionId).innerHTML;
 
         if (fileUpload.files.length > 0) {
-            Array.from(fileUpload.files).forEach(async (file) => {
-                try {
-                    const filePath = `${pageType}/${file.name}`;
-                    const base64Content = await fileToBase64(file);
-
-                    await uploadFileToGitHub(filePath, base64Content, `Uploaded: ${fileTitle}`);
-                    const fileUrl = `https://raw.githubusercontent.com/${owner}/${repoName}/main/${filePath}`;
-
-                    createPreview(file.name, fileTitle, fileDescription, fileUrl, previewContainer, pageType);
-                    alert('File uploaded successfully.');
-                } catch (error) {
-                    console.error('Error uploading file:', error);
-                    alert('Error uploading file. Please try again.');
-                }
-            });
-        } else if (fileTitle || fileDescription) {
-            alert('Please select a file to upload.');
-        }
-
-        fileUpload.value = ''; // Reset file input
-    }
-
-    async function uploadFileToGitHub(path, content, message) {
-        const url = `https://api.github.com/repos/${owner}/${repoName}/contents/${path}`;
-        const response = await fetch(url, {
-            method: 'PUT',
-            headers: {
-                Authorization: `Bearer ${githubToken}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                message,
-                content,
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`GitHub API error: ${response.statusText}`);
-        }
-    }
-
-    function fileToBase64(file) {
-        return new Promise((resolve, reject) => {
+            const file = fileUpload.files[0];
             const reader = new FileReader();
-            reader.onload = () => resolve(reader.result.split(',')[1]);
-            reader.onerror = reject;
+
+            reader.onload = async function (e) {
+                const base64File = e.target.result.split(",")[1]; // Extract Base64 content
+
+                const uploadResponse = await githubApiRequest(
+                    `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${pageType}/${file.name}`,
+                    "PUT",
+                    {
+                        message: `Uploaded ${file.name}`,
+                        content: base64File,
+                    }
+                );
+
+                if (uploadResponse) {
+                    const fileUrl = uploadResponse.content.download_url;
+
+                    const metadata = {
+                        title: fileTitle,
+                        description: fileDescription,
+                        fileUrl,
+                    };
+
+                    await githubApiRequest(
+                        `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${pageType}/metadata.json`,
+                        "PUT",
+                        {
+                            message: "Updated metadata",
+                            content: btoa(JSON.stringify(metadata)),
+                        }
+                    );
+
+                    alert('File uploaded and metadata updated successfully.');
+                    loadPreviewsFromGithub(previewContainer, pageType);
+                }
+            };
+
             reader.readAsDataURL(file);
-        });
-    }
-
-    function createPreview(fileName, title, description, fileUrl, previewContainer, pageType) {
-        const previewGroup = document.createElement('div');
-        previewGroup.classList.add('preview-group');
-
-        const previewHeader = document.createElement('div');
-        previewHeader.classList.add('preview-header');
-
-        const titleElem = document.createElement('h4');
-        titleElem.innerHTML = title || 'No Title';
-        previewHeader.appendChild(titleElem);
-
-        const descriptionElem = document.createElement('p');
-        descriptionElem.innerHTML = description || 'No Description';
-        previewHeader.appendChild(descriptionElem);
-
-        if (fileUrl) {
-            const previewItem = document.createElement('div');
-            previewItem.classList.add('preview-item');
-
-            if (fileUrl.match(/\.(jpeg|jpg|png|gif)$/)) {
-                const img = document.createElement('img');
-                img.src = fileUrl;
-                img.alt = fileName;
-                previewItem.appendChild(img);
-            } else if (fileUrl.match(/\.(mp4|webm|ogg)$/)) {
-                const video = document.createElement('video');
-                video.src = fileUrl;
-                video.controls = true;
-                previewItem.appendChild(video);
-            }
-
-            previewGroup.appendChild(previewItem);
+        } else if (fileTitle || fileDescription) {
+            alert("Please enter a title or description.");
         }
-
-        previewContainer.appendChild(previewGroup);
     }
 
+    async function loadPreviewsFromGithub(previewContainer, pageType) {
+        const metadataResponse = await githubApiRequest(
+            `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${pageType}/metadata.json`
+        );
+
+        if (metadataResponse) {
+            const metadata = JSON.parse(atob(metadataResponse.content));
+            const previewGroup = document.createElement('div');
+            previewGroup.innerHTML = `
+                <h4>${metadata.title}</h4>
+                <p>${metadata.description}</p>
+                <a href="${metadata.fileUrl}" target="_blank">View File</a>
+            `;
+            previewContainer.appendChild(previewGroup);
+        }
+    }
+
+    // Initialize Previews
     const uploadButtonInternships = document.getElementById('uploadButtonInternships');
     const uploadPreviewInternships = document.getElementById('uploadPreviewInternships');
     if (uploadButtonInternships) {
         uploadButtonInternships.addEventListener('click', function () {
             handleFileUpload('fileUploadInternships', 'fileTitleInternships', 'fileDescriptionInternships', uploadPreviewInternships, 'Internships');
         });
+        loadPreviewsFromGithub(uploadPreviewInternships, 'Internships');
     }
 
     const uploadButtonProjects = document.getElementById('uploadButtonProjects');
@@ -233,20 +236,8 @@ document.addEventListener('DOMContentLoaded', function () {
         uploadButtonProjects.addEventListener('click', function () {
             handleFileUpload('fileUploadProjects', 'fileTitleProjects', 'fileDescriptionProjects', uploadPreviewProjects, 'Projects');
         });
+        loadPreviewsFromGithub(uploadPreviewProjects, 'Projects');
     }
 
-    // Toggle delete buttons visibility and functionality based on admin status
-    function toggleDeleteButtons() {
-        document.querySelectorAll('.delete-button').forEach(button => {
-            if (isAdmin) {
-                button.style.display = 'block';
-                button.disabled = false;
-                button.classList.remove('disabled');
-            } else {
-                button.style.display = 'none';
-                button.disabled = true;
-                button.classList.add('disabled');
-            }
-        });
-    }
+    toggleDeleteButtons();
 });
