@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const loadingScreen = document.getElementById('loadingScreen');
     let isAdmin = localStorage.getItem('isAdmin') === 'true';
 
-    const githubToken = 'YOUR_PERSONAL_ACCESS_TOKEN'; // Replace with your GitHub token
+    const githubToken = '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'; // Replace with your GitHub token
     const repoName = 'Ashley-F-Almonte-Portfolio';
     const owner = 'ash-almonte-it23';
 
