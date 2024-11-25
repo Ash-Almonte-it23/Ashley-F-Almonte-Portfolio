@@ -213,14 +213,10 @@ button:hover {
     border-radius: 5px; /* Rounded corners */
     padding: 5px; /* Space inside the toolbar */
     z-index: 1000; /* Ensure it appears above other elements */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Slight shadow for depth */
     color: #fff; /* Text color */
     max-width: 90%; /* Prevents the toolbar from being too wide */
     overflow-wrap: break-word; /* Ensures text doesn't overflow */
-    left: auto; /* Prevents unintended centering */
-    right: auto; /* Adjusts for responsive positioning */
-    top: auto; /* Allows for dynamic vertical placement */
-    bottom: auto; /* Prevents fixed bottom positioning */
     transform: none; /* Removes centering transform to avoid layout issues */
 }
 
@@ -247,6 +243,7 @@ button:hover {
     .popup-toolbar {
         font-size: 12px; /* Smaller text for compact view */
         padding: 3px; /* Reduced padding */
+        max-width: 100%; /* Fully responsive for smaller screens */
     }
 
     .popup-toolbar button {
