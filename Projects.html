@@ -6,12 +6,7 @@
     <link rel="stylesheet" href="styles.css">
     <title>Projects</title>
 </head>
-    <!-- Firebase SDK -->
- <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
- <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
- <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage.js"></script>
 <body>
-    <!-- Loading Screen -->
     <div id="loadingScreen" class="ring">Loading
         <span></span>
     </div>
@@ -25,7 +20,6 @@
                     <span class="slider"></span>
                 </label>
             </div>
-
             <!-- Admin Login Form -->
             <div id="adminLogin" class="block-cube">
                 <form autocomplete="off">
@@ -48,16 +42,15 @@
         <div class="navigation">
             <button class="button-85" onclick="window.location.href='index.html'">Home</button>
             <button class="button-85" onclick="window.location.href='Internships.html'">Internships</button>
+            <!-- Adjusted 404 button with smaller size and positioned below -->
             <button class="button-85 smaller-button" onclick="window.location.href='404.html'">404 Page</button>        
         </div>
-
         <div class="info-section">
             <h2>Project Title</h2>
             <p>Description of the project...</p>
         </div>
 
-        <!-- Upload Section - Only visible to admin -->
-        <div class="upload-container" style="display: none;">
+        <div class="upload-container" style="display:none;">
             <h2>Upload Files</h2>
             <input type="file" id="fileUploadProjects" multiple>
             <div contenteditable="true" id="fileTitleProjects" class="editable-div" placeholder="Enter file title">Enter file title</div>
@@ -81,7 +74,6 @@
             <button id="uploadButtonProjects" class="button-85">Upload</button>
         </div>
 
-        <!-- Preview Section for Uploaded Files -->
         <div id="uploadPreviewProjects" class="upload-preview"></div>
     </div>
 
