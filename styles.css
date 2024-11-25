@@ -204,29 +204,54 @@ button:hover {
     }
 }
 
-/* Popup toolbar */
+/* Popup Toolbar Styles */
 .popup-toolbar {
-    display: none;
-    position: absolute;
-    background-color: rgba(0, 0, 0, 0.8);
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 5px;
-    z-index: 1000;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    color: #fff;
-    left: 50%;
-    transform: translateX(-50%);
+    display: none; /* Initially hidden */
+    position: absolute; /* Allows dynamic positioning */
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black */
+    border: 1px solid #ccc; /* Light border for visibility */
+    border-radius: 5px; /* Rounded corners */
+    padding: 5px; /* Space inside the toolbar */
+    z-index: 1000; /* Ensure it appears above other elements */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+    color: #fff; /* Text color */
+    max-width: 90%; /* Prevents the toolbar from being too wide */
+    overflow-wrap: break-word; /* Ensures text doesn't overflow */
+    left: auto; /* Prevents unintended centering */
+    right: auto; /* Adjusts for responsive positioning */
+    top: auto; /* Allows for dynamic vertical placement */
+    bottom: auto; /* Prevents fixed bottom positioning */
+    transform: none; /* Removes centering transform to avoid layout issues */
 }
 
-.popup-toolbar button, .popup-toolbar input[type="color"] {
-    margin-right: 5px;
-    background-color: #555;
-    color: #fff;
+/* Button and Input Styles */
+.popup-toolbar button,
+.popup-toolbar input[type="color"] {
+    margin-right: 5px; /* Spacing between toolbar elements */
+    background-color: #555; /* Default button background */
+    color: #fff; /* Button text color */
+    border: none; /* Removes default browser button borders */
+    border-radius: 3px; /* Subtle rounding for buttons */
+    padding: 5px 10px; /* Button size */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.2s ease; /* Smooth hover effect */
 }
 
+/* Hover Effect for Buttons */
 .popup-toolbar button:hover {
-    background-color: #666;
+    background-color: #666; /* Slightly lighter background on hover */
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .popup-toolbar {
+        font-size: 12px; /* Smaller text for compact view */
+        padding: 3px; /* Reduced padding */
+    }
+
+    .popup-toolbar button {
+        padding: 4px 8px; /* Smaller buttons */
+    }
 }
 
 /* Upload Preview Styles */
