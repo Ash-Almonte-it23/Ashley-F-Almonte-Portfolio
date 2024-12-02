@@ -5,9 +5,10 @@ document.addEventListener('DOMContentLoaded', function () {
     let isAdmin = localStorage.getItem('isAdmin') === 'true';
 
     // GitHub API configuration
+    const GITHUB_API_URL = "https://api.github.com";
+    const githubToken = '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'; // Replace with your GitHub token
     const repoName = 'Ashley-F-Almonte-Portfolio';
     const owner = 'ash-almonte-it23';
-    const token = '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';
 
     // Loading Screen Logic
     window.addEventListener('load', function () {
@@ -68,25 +69,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Toggle admin features (upload containers and delete buttons)
+    // Toggle admin features
     function toggleAdminFeatures() {
         const uploadContainers = document.querySelectorAll('.upload-container');
-        const deleteButtons = document.querySelectorAll('.delete-button');
-
         if (isAdmin) {
             document.body.classList.add('admin-enabled');
             uploadContainers.forEach(container => container.style.display = 'block');
-            deleteButtons.forEach(button => {
-                button.style.display = 'block';
-                button.disabled = false;
-            });
         } else {
             document.body.classList.remove('admin-enabled');
             uploadContainers.forEach(container => container.style.display = 'none');
-            deleteButtons.forEach(button => {
-                button.style.display = 'none';
-                button.disabled = true;
-            });
         }
     }
 
@@ -126,77 +117,29 @@ document.addEventListener('DOMContentLoaded', function () {
     setupPopupToolbar('fileTitleProjects', 'popupToolbarTitleProjects');
     setupPopupToolbar('fileDescriptionProjects', 'popupToolbarDescriptionProjects');
 
-    // File Upload Logic with GitHub Integration
-    async function handleFileUpload(fileUploadId, fileTitleId, fileDescriptionId, previewContainer, pageType) {
-        if (!isAdmin) return;
-
-        const fileUpload = document.getElementById(fileUploadId);
-        const fileTitle = document.getElementById(fileTitleId).value || 'No Title';
-        const fileDescription = document.getElementById(fileDescriptionId).value || 'No Description';
-
-        const previewGroup = document.createElement('div');
-        previewGroup.classList.add('preview-group');
-
-        const previewHeader = document.createElement('div');
-        previewHeader.classList.add('preview-header');
-
-        const titleElem = document.createElement('h4');
-        titleElem.innerHTML = fileTitle;
-        previewHeader.appendChild(titleElem);
-
-        const descriptionElem = document.createElement('p');
-        descriptionElem.innerHTML = fileDescription;
-        previewHeader.appendChild(descriptionElem);
-
-        previewGroup.appendChild(previewHeader);
-
-        for (const file of fileUpload.files) {
-            try {
-                const fileUrl = await uploadToGitHub(file, fileTitle, fileDescription);
-                const previewItem = document.createElement('div');
-                previewItem.classList.add('preview-item');
-
-                if (file.type.startsWith('image/')) {
-                    const img = document.createElement('img');
-                    img.src = fileUrl;
-                    img.alt = file.name;
-                    previewItem.appendChild(img);
-                } else if (file.type.startsWith('video/')) {
-                    const video = document.createElement('video');
-                    video.src = fileUrl;
-                    video.controls = true;
-                    previewItem.appendChild(video);
-                }
-
-                previewGroup.appendChild(previewItem);
-            } catch (error) {
-                console.error(`Failed to upload ${file.name}:`, error);
-            }
-        }
-
-        previewContainer.appendChild(previewGroup);
-    }
-
-    async function uploadToGitHub(file, title, description) {
+    // GitHub Upload Function
+    async function uploadToGitHub(file, pageType) {
+        const fileName = file.name;
         const reader = new FileReader();
         return new Promise((resolve, reject) => {
             reader.onload = async function () {
                 const base64Content = btoa(reader.result);
+                const url = `${GITHUB_API_URL}/repos/${owner}/${repoName}/contents/${pageType}/${fileName}`;
                 try {
-                    const response = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/${file.name}`, {
+                    const response = await fetch(url, {
                         method: 'PUT',
                         headers: {
-                            Authorization: `token ${token}`,
+                            Authorization: `Bearer ${githubToken}`,
+                            'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
-                            message: `Adding ${file.name}`,
+                            message: `Upload ${fileName}`,
                             content: base64Content,
                         }),
                     });
                     const data = await response.json();
                     resolve(data.content.download_url);
                 } catch (error) {
-                    console.error(error);
                     reject(error);
                 }
             };
@@ -205,7 +148,46 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Event Listeners for Upload Buttons
+    // File Upload Logic
+    async function handleFileUpload(fileUploadId, fileTitleId, fileDescriptionId, previewContainer, pageType) {
+        if (!isAdmin) return;
+
+        const fileUpload = document.getElementById(fileUploadId);
+        const fileTitle = document.getElementById(fileTitleId).value || 'No Title';
+        const fileDescription = document.getElementById(fileDescriptionId).value || 'No Description';
+
+        if (fileUpload.files.length > 0 || fileTitle || fileDescription) {
+            const previewGroup = document.createElement('div');
+            previewGroup.classList.add('preview-group');
+
+            const previewHeader = document.createElement('div');
+            previewHeader.classList.add('preview-header');
+            previewHeader.innerHTML = `<h4>${fileTitle}</h4><p>${fileDescription}</p>`;
+            previewGroup.appendChild(previewHeader);
+
+            for (const file of fileUpload.files) {
+                try {
+                    const fileUrl = await uploadToGitHub(file, pageType);
+                    const previewItem = document.createElement('div');
+                    previewItem.classList.add('preview-item');
+
+                    if (file.type.startsWith('image/')) {
+                        previewItem.innerHTML = `<img src="${fileUrl}" alt="${file.name}">`;
+                    } else if (file.type.startsWith('video/')) {
+                        previewItem.innerHTML = `<video src="${fileUrl}" controls></video>`;
+                    }
+
+                    previewGroup.appendChild(previewItem);
+                } catch (error) {
+                    console.error(`Failed to upload file: ${file.name}`, error);
+                }
+            }
+
+            previewContainer.appendChild(previewGroup);
+        }
+    }
+
+    // Set up event listeners for upload buttons
     const uploadButtonInternships = document.getElementById('uploadButtonInternships');
     const uploadPreviewInternships = document.getElementById('uploadPreviewInternships');
     if (uploadButtonInternships) {
@@ -222,6 +204,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Initialize admin features
+    // Initialize admin features on page load
     toggleAdminFeatures();
 });
