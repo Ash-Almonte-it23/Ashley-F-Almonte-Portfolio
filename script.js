@@ -4,10 +4,48 @@ document.addEventListener('DOMContentLoaded', function () {
     const loadingScreen = document.getElementById('loadingScreen');
     let isAdmin = localStorage.getItem('isAdmin') === 'true';
 
-    // GitHub API configuration
+    // GitHub API Configuration
+    const githubToken = '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';
+    const repoOwner = 'Ash-Almonte-it23';
     const repoName = 'Ashley-F-Almonte-Portfolio';
-    const owner = 'ash-almonte-it23';
-    const token = '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'; // Replace with your GitHub token
+    const baseApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
+
+    async function uploadToGitHub(filePath, content) {
+        const url = `${baseApiUrl}/${filePath}`;
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                Authorization: `token ${githubToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: `Add or update ${filePath}`,
+                content: btoa(content),
+            })
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            console.error('GitHub upload error:', error);
+        }
+        return response.ok;
+    }
+
+    async function fetchFromGitHub(filePath) {
+        const url = `${baseApiUrl}/${filePath}`;
+        const response = await fetch(url, {
+            headers: {
+                Authorization: `token ${githubToken}`
+            }
+        });
+
+        if (!response.ok) {
+            console.error('GitHub fetch error:', response.statusText);
+            return null;
+        }
+        const data = await response.json();
+        return atob(data.content);
+    }
 
     // Loading Screen Logic
     window.addEventListener('load', function () {
@@ -76,148 +114,77 @@ document.addEventListener('DOMContentLoaded', function () {
             if (isAdmin) {
                 button.style.display = 'block';
                 button.disabled = false;
-                button.classList.remove('disabled');
             } else {
                 button.style.display = 'none';
                 button.disabled = true;
-                button.classList.add('disabled');
             }
         });
     }
 
-    // GitHub API Helper Functions
-    async function uploadToGitHub(file, folder = '') {
-        const filePath = `${folder}/${file.name}`;
-        const fileContent = await readFileAsBase64(file);
+    // Popup Toolbar Setup
+    function setupPopupToolbar(containerId, toolbarId) {
+        const container = document.getElementById(containerId);
+        const toolbar = document.getElementById(toolbarId);
 
-        const response = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/${filePath}`, {
-            method: 'PUT',
-            headers: {
-                Authorization: `token ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: `Adding file: ${file.name}`,
-                content: fileContent,
-            })
-        });
-
-        if (!response.ok) {
-            console.error(`Failed to upload ${file.name}:`, await response.json());
-            alert(`Failed to upload ${file.name}. Check the console for details.`);
-            return null;
+        if (!container || !toolbar) {
+            console.error(`Element not found: ${containerId}, ${toolbarId}`);
+            return;
         }
 
-        const data = await response.json();
-        return data.content.download_url;
-    }
-
-    async function deleteFromGitHub(folder, fileName) {
-        const filePath = `${folder}/${fileName}`;
-        const response = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/${filePath}`, {
-            method: 'DELETE',
-            headers: {
-                Authorization: `token ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                message: `Deleting file: ${fileName}`,
-                sha: '', // Add the correct SHA here if needed
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`Failed to delete ${fileName}`);
-        }
-    }
-
-    // Function to create delete button
-    function createDeleteButton(previewGroup, fileName, folder) {
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'X';
-        deleteButton.classList.add('delete-button');
-        deleteButton.style.display = isAdmin ? 'block' : 'none';
-        deleteButton.disabled = !isAdmin;
-
-        deleteButton.addEventListener('click', async function () {
-            if (!isAdmin) {
-                alert('You are not authorized to delete items.');
-                return;
-            }
-            try {
-                await deleteFromGitHub(folder, fileName);
-                previewGroup.remove();
-            } catch (error) {
-                console.error('Error deleting file:', error);
-                alert('Failed to delete file. Check the console for details.');
+        container.addEventListener('mouseup', () => {
+            const selection = window.getSelection();
+            if (selection.toString().length > 0) {
+                const containerRect = container.getBoundingClientRect();
+                toolbar.style.top = `${containerRect.top + window.scrollY - toolbar.offsetHeight - 50}px`;
+                toolbar.style.left = `${containerRect.left + window.scrollX}px`;
+                toolbar.style.display = 'block';
+            } else {
+                toolbar.style.display = 'none';
             }
         });
 
-        return deleteButton;
+        toolbar.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.execCommand(button.title.toLowerCase(), false, null);
+                toolbar.style.display = 'none';
+            });
+        });
+
+        toolbar.querySelector('input[type="color"]').addEventListener('input', (event) => {
+            document.execCommand('foreColor', false, event.target.value);
+        });
     }
 
-    async function handleFileUpload(fileUploadId, fileTitleId, fileDescriptionId, previewContainer, folder = '') {
+    setupPopupToolbar('fileTitleInternships', 'popupToolbarTitleInternships');
+    setupPopupToolbar('fileDescriptionInternships', 'popupToolbarDescriptionInternships');
+    setupPopupToolbar('fileTitleProjects', 'popupToolbarTitleProjects');
+    setupPopupToolbar('fileDescriptionProjects', 'popupToolbarDescriptionProjects');
+
+    // File Upload Logic and Preview Loading
+    async function handleFileUpload(fileUploadId, fileTitleId, fileDescriptionId, previewContainer, pageType) {
         if (!isAdmin) return;
 
         const fileUpload = document.getElementById(fileUploadId);
-        const fileTitle = document.getElementById(fileTitleId).value || 'No Title';
-        const fileDescription = document.getElementById(fileDescriptionId).value || 'No Description';
+        const fileTitle = document.getElementById(fileTitleId).innerHTML.trim();
+        const fileDescription = document.getElementById(fileDescriptionId).innerHTML.trim();
 
-        if (fileUpload.files.length > 0 || fileTitle || fileDescription) {
-            const previewGroup = document.createElement('div');
-            previewGroup.classList.add('preview-group');
+        const files = fileUpload.files;
 
-            const previewHeader = document.createElement('div');
-            previewHeader.classList.add('preview-header');
-
-            const titleElem = document.createElement('h4');
-            titleElem.innerHTML = fileTitle;
-            previewHeader.appendChild(titleElem);
-
-            const deleteButton = createDeleteButton(previewGroup, fileTitle, folder);
-            previewHeader.appendChild(deleteButton);
-
-            previewGroup.appendChild(previewHeader);
-
-            const descriptionElem = document.createElement('p');
-            descriptionElem.innerHTML = fileDescription;
-            previewGroup.appendChild(descriptionElem);
-
-            Array.from(fileUpload.files).forEach(async (file) => {
-                const fileUrl = await uploadToGitHub(file, folder);
-                const previewItem = document.createElement('div');
-                previewItem.classList.add('preview-item');
-
-                if (file.type.startsWith('image/')) {
-                    const img = document.createElement('img');
-                    img.src = fileUrl;
-                    img.alt = file.name;
-                    previewItem.appendChild(img);
-                } else if (file.type.startsWith('video/')) {
-                    const video = document.createElement('video');
-                    video.src = fileUrl;
-                    video.controls = true;
-                    previewItem.appendChild(video);
-                }
-
-                previewGroup.appendChild(previewItem);
-            });
-
-            previewContainer.appendChild(previewGroup);
-        }
-    }
-
-    // Helper Function to Read File as Base64
-    function readFileAsBase64(file) {
-        return new Promise((resolve, reject) => {
+        for (let file of files) {
             const reader = new FileReader();
-            reader.onload = () => resolve(btoa(reader.result));
-            reader.onerror = (error) => reject(error);
-            reader.readAsBinaryString(file);
-        });
+            reader.onload = async function (e) {
+                const fileUrl = e.target.result;
+                const filePath = `${pageType}/${file.name}`;
+                await uploadToGitHub(filePath, fileUrl.split(',')[1]);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        const metadata = { title: fileTitle || 'Untitled', description: fileDescription || 'No description' };
+        await uploadToGitHub(`${pageType}/metadata.json`, JSON.stringify(metadata));
     }
 
-    // Adding Event Listeners for Uploads
+    // Initialize upload buttons and preview loading
     const uploadButtonInternships = document.getElementById('uploadButtonInternships');
     const uploadPreviewInternships = document.getElementById('uploadPreviewInternships');
     if (uploadButtonInternships) {
