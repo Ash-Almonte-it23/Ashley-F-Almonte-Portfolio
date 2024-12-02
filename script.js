@@ -1,14 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const darkModeToggle = document.getElementById('dark-mode-toggle');
-    const body = document.body;
     const loadingScreen = document.getElementById('loadingScreen');
-    let isAdmin = localStorage.getItem('isAdmin') === 'true';
-
-    // GitHub API configuration
     const GITHUB_API_URL = "https://api.github.com";
     const githubToken = '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'; // Replace with your GitHub token
     const repoName = 'Ashley-F-Almonte-Portfolio';
     const owner = 'ash-almonte-it23';
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const body = document.body;
+    let isAdmin = localStorage.getItem('isAdmin') === 'true';
 
     // Loading Screen Logic
     window.addEventListener('load', function () {
@@ -59,7 +57,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('Login successful');
                 isAdmin = true;
                 localStorage.setItem('isAdmin', 'true');
-                toggleAdminFeatures();
+                document.body.classList.add('admin-enabled');
+                document.querySelectorAll('.upload-container').forEach(container => container.style.display = 'block');
+                toggleDeleteButtons();
                 usernameField.value = '';
                 passwordField.value = '';
                 document.getElementById('adminLogin').style.display = 'none';
@@ -69,55 +69,42 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Toggle admin features
-    function toggleAdminFeatures() {
-        const uploadContainers = document.querySelectorAll('.upload-container');
-        if (isAdmin) {
-            document.body.classList.add('admin-enabled');
-            uploadContainers.forEach(container => container.style.display = 'block');
-        } else {
-            document.body.classList.remove('admin-enabled');
-            uploadContainers.forEach(container => container.style.display = 'none');
-        }
-    }
-
-    // Popup Toolbar Setup
-    function setupPopupToolbar(containerId, toolbarId) {
-        const container = document.getElementById(containerId);
-        const toolbar = document.getElementById(toolbarId);
-
-        if (!container || !toolbar) return;
-
-        container.addEventListener('mouseup', () => {
-            const selection = window.getSelection();
-            if (selection.toString().length > 0) {
-                const containerRect = container.getBoundingClientRect();
-                toolbar.style.top = `${containerRect.top + window.scrollY - toolbar.offsetHeight - 50}px`;
-                toolbar.style.left = `${containerRect.left + window.scrollX}px`;
-                toolbar.style.display = 'block';
+    // Toggle delete buttons visibility and functionality based on admin status
+    function toggleDeleteButtons() {
+        document.querySelectorAll('.delete-button').forEach(button => {
+            if (isAdmin) {
+                button.style.display = 'block';
+                button.disabled = false;
+                button.classList.remove('disabled');
             } else {
-                toolbar.style.display = 'none';
+                button.style.display = 'none';
+                button.disabled = true;
+                button.classList.add('disabled');
             }
         });
-
-        toolbar.querySelectorAll('button').forEach(button => {
-            button.addEventListener('click', () => {
-                document.execCommand(button.title.toLowerCase(), false, null);
-                toolbar.style.display = 'none';
-            });
-        });
-
-        toolbar.querySelector('input[type="color"]').addEventListener('input', (event) => {
-            document.execCommand('foreColor', false, event.target.value);
-        });
     }
 
-    setupPopupToolbar('fileTitleInternships', 'popupToolbarTitleInternships');
-    setupPopupToolbar('fileDescriptionInternships', 'popupToolbarDescriptionInternships');
-    setupPopupToolbar('fileTitleProjects', 'popupToolbarTitleProjects');
-    setupPopupToolbar('fileDescriptionProjects', 'popupToolbarDescriptionProjects');
+    // Function to create delete button
+    function createDeleteButton(previewGroup, fileName, pageType) {
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'X';
+        deleteButton.classList.add('delete-button');
+        deleteButton.style.display = isAdmin ? 'block' : 'none';
+        deleteButton.disabled = !isAdmin;
 
-    // GitHub Upload Function
+        deleteButton.addEventListener('click', async function () {
+            if (!isAdmin) {
+                alert('You are not authorized to delete items.');
+                return;
+            }
+            previewGroup.remove();
+            await removeFromGitHub(fileName, pageType);
+        });
+
+        return deleteButton;
+    }
+
+    // GitHub Integration
     async function uploadToGitHub(file, pageType) {
         const fileName = file.name;
         const reader = new FileReader();
@@ -148,6 +135,33 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    async function removeFromGitHub(fileName, pageType) {
+        const url = `${GITHUB_API_URL}/repos/${owner}/${repoName}/contents/${pageType}/${fileName}`;
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${githubToken}`,
+            },
+        });
+        if (!response.ok) {
+            console.error(`File not found: ${fileName}`);
+            return;
+        }
+        const fileData = await response.json();
+        const sha = fileData.sha;
+        await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${githubToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                message: `Delete ${fileName}`,
+                sha,
+            }),
+        });
+    }
+
     // File Upload Logic
     async function handleFileUpload(fileUploadId, fileTitleId, fileDescriptionId, previewContainer, pageType) {
         if (!isAdmin) return;
@@ -156,35 +170,33 @@ document.addEventListener('DOMContentLoaded', function () {
         const fileTitle = document.getElementById(fileTitleId).value || 'No Title';
         const fileDescription = document.getElementById(fileDescriptionId).value || 'No Description';
 
-        if (fileUpload.files.length > 0 || fileTitle || fileDescription) {
-            const previewGroup = document.createElement('div');
-            previewGroup.classList.add('preview-group');
+        const previewGroup = document.createElement('div');
+        previewGroup.classList.add('preview-group');
 
-            const previewHeader = document.createElement('div');
-            previewHeader.classList.add('preview-header');
-            previewHeader.innerHTML = `<h4>${fileTitle}</h4><p>${fileDescription}</p>`;
-            previewGroup.appendChild(previewHeader);
+        const previewHeader = document.createElement('div');
+        previewHeader.classList.add('preview-header');
+        previewHeader.innerHTML = `<h4>${fileTitle}</h4><p>${fileDescription}</p>`;
+        previewGroup.appendChild(previewHeader);
 
-            for (const file of fileUpload.files) {
-                try {
-                    const fileUrl = await uploadToGitHub(file, pageType);
-                    const previewItem = document.createElement('div');
-                    previewItem.classList.add('preview-item');
+        for (const file of fileUpload.files) {
+            try {
+                const fileUrl = await uploadToGitHub(file, pageType);
+                const previewItem = document.createElement('div');
+                previewItem.classList.add('preview-item');
 
-                    if (file.type.startsWith('image/')) {
-                        previewItem.innerHTML = `<img src="${fileUrl}" alt="${file.name}">`;
-                    } else if (file.type.startsWith('video/')) {
-                        previewItem.innerHTML = `<video src="${fileUrl}" controls></video>`;
-                    }
-
-                    previewGroup.appendChild(previewItem);
-                } catch (error) {
-                    console.error(`Failed to upload file: ${file.name}`, error);
+                if (file.type.startsWith('image/')) {
+                    previewItem.innerHTML = `<img src="${fileUrl}" alt="${file.name}">`;
+                } else if (file.type.startsWith('video/')) {
+                    previewItem.innerHTML = `<video src="${fileUrl}" controls></video>`;
                 }
-            }
 
-            previewContainer.appendChild(previewGroup);
+                previewGroup.appendChild(previewItem);
+            } catch (error) {
+                console.error(`Failed to upload file: ${file.name}`, error);
+            }
         }
+
+        previewContainer.appendChild(previewGroup);
     }
 
     // Set up event listeners for upload buttons
@@ -205,5 +217,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Initialize admin features on page load
-    toggleAdminFeatures();
+    toggleDeleteButtons();
 });
