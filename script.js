@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // GitHub API configuration
     const repoName = 'Ashley-F-Almonte-Portfolio';
     const owner = 'ash-almonte-it23';
-    const token = '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'; // Replace this with your GitHub token
+    const token = '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'; // Replace this with your GitHub token
 
     // Loading Screen Logic
     window.addEventListener('load', function () {
