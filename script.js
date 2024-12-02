@@ -58,8 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('Login successful');
                 isAdmin = true;
                 localStorage.setItem('isAdmin', 'true');
-                document.body.classList.add('admin-enabled');
-                toggleDeleteButtons();
+                toggleAdminFeatures();
                 usernameField.value = '';
                 passwordField.value = '';
                 document.getElementById('adminLogin').style.display = 'none';
@@ -69,19 +68,26 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Toggle delete buttons visibility based on admin status
-    function toggleDeleteButtons() {
-        document.querySelectorAll('.delete-button').forEach(button => {
-            if (isAdmin) {
+    // Toggle admin features (upload containers and delete buttons)
+    function toggleAdminFeatures() {
+        const uploadContainers = document.querySelectorAll('.upload-container');
+        const deleteButtons = document.querySelectorAll('.delete-button');
+
+        if (isAdmin) {
+            document.body.classList.add('admin-enabled');
+            uploadContainers.forEach(container => container.style.display = 'block');
+            deleteButtons.forEach(button => {
                 button.style.display = 'block';
                 button.disabled = false;
-                button.classList.remove('disabled');
-            } else {
+            });
+        } else {
+            document.body.classList.remove('admin-enabled');
+            uploadContainers.forEach(container => container.style.display = 'none');
+            deleteButtons.forEach(button => {
                 button.style.display = 'none';
                 button.disabled = true;
-                button.classList.add('disabled');
-            }
-        });
+            });
+        }
     }
 
     // Popup Toolbar Setup
@@ -89,10 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const container = document.getElementById(containerId);
         const toolbar = document.getElementById(toolbarId);
 
-        if (!container || !toolbar) {
-            console.error(`Element not found: ${containerId}, ${toolbarId}`);
-            return;
-        }
+        if (!container || !toolbar) return;
 
         container.addEventListener('mouseup', () => {
             const selection = window.getSelection();
@@ -116,19 +119,6 @@ document.addEventListener('DOMContentLoaded', function () {
         toolbar.querySelector('input[type="color"]').addEventListener('input', (event) => {
             document.execCommand('foreColor', false, event.target.value);
         });
-
-        toolbar.querySelector('button[title="Increase Font Size"]').addEventListener('click', () => {
-            document.execCommand('fontSize', false, '4');
-        });
-        toolbar.querySelector('button[title="Decrease Font Size"]').addEventListener('click', () => {
-            document.execCommand('fontSize', false, '2');
-        });
-
-        document.addEventListener('mousedown', function (event) {
-            if (!toolbar.contains(event.target) && !container.contains(event.target)) {
-                toolbar.style.display = 'none';
-            }
-        });
     }
 
     setupPopupToolbar('fileTitleInternships', 'popupToolbarTitleInternships');
@@ -136,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setupPopupToolbar('fileTitleProjects', 'popupToolbarTitleProjects');
     setupPopupToolbar('fileDescriptionProjects', 'popupToolbarDescriptionProjects');
 
-    // File Upload Logic
+    // File Upload Logic with GitHub Integration
     async function handleFileUpload(fileUploadId, fileTitleId, fileDescriptionId, previewContainer, pageType) {
         if (!isAdmin) return;
 
@@ -144,27 +134,24 @@ document.addEventListener('DOMContentLoaded', function () {
         const fileTitle = document.getElementById(fileTitleId).value || 'No Title';
         const fileDescription = document.getElementById(fileDescriptionId).value || 'No Description';
 
-        if (fileUpload.files.length > 0 || fileTitle || fileDescription) {
-            const previewGroup = document.createElement('div');
-            previewGroup.classList.add('preview-group');
+        const previewGroup = document.createElement('div');
+        previewGroup.classList.add('preview-group');
 
-            const previewHeader = document.createElement('div');
-            previewHeader.classList.add('preview-header');
+        const previewHeader = document.createElement('div');
+        previewHeader.classList.add('preview-header');
 
-            const titleElem = document.createElement('h4');
-            titleElem.innerHTML = fileTitle;
-            previewHeader.appendChild(titleElem);
+        const titleElem = document.createElement('h4');
+        titleElem.innerHTML = fileTitle;
+        previewHeader.appendChild(titleElem);
 
-            const deleteButton = createDeleteButton(previewGroup, fileTitle, pageType);
-            previewHeader.appendChild(deleteButton);
+        const descriptionElem = document.createElement('p');
+        descriptionElem.innerHTML = fileDescription;
+        previewHeader.appendChild(descriptionElem);
 
-            previewGroup.appendChild(previewHeader);
+        previewGroup.appendChild(previewHeader);
 
-            const descriptionElem = document.createElement('p');
-            descriptionElem.innerHTML = fileDescription;
-            previewGroup.appendChild(descriptionElem);
-
-            Array.from(fileUpload.files).forEach(async (file) => {
+        for (const file of fileUpload.files) {
+            try {
                 const fileUrl = await uploadToGitHub(file, fileTitle, fileDescription);
                 const previewItem = document.createElement('div');
                 previewItem.classList.add('preview-item');
@@ -182,10 +169,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 previewGroup.appendChild(previewItem);
-            });
-
-            previewContainer.appendChild(previewGroup);
+            } catch (error) {
+                console.error(`Failed to upload ${file.name}:`, error);
+            }
         }
+
+        previewContainer.appendChild(previewGroup);
     }
 
     async function uploadToGitHub(file, title, description) {
@@ -198,17 +187,16 @@ document.addEventListener('DOMContentLoaded', function () {
                         method: 'PUT',
                         headers: {
                             Authorization: `token ${token}`,
-                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            message: `Adding file: ${file.name}`,
-                            content: base64Content
-                        })
+                            message: `Adding ${file.name}`,
+                            content: base64Content,
+                        }),
                     });
                     const data = await response.json();
                     resolve(data.content.download_url);
                 } catch (error) {
-                    alert('Error uploading to GitHub. Please try again.');
+                    console.error(error);
                     reject(error);
                 }
             };
@@ -217,11 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Load previews
-    function loadPreviewsFromStorage(previewContainer, pageType) {
-        // Logic to fetch and display saved previews
-    }
-
+    // Event Listeners for Upload Buttons
     const uploadButtonInternships = document.getElementById('uploadButtonInternships');
     const uploadPreviewInternships = document.getElementById('uploadPreviewInternships');
     if (uploadButtonInternships) {
@@ -237,4 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
             handleFileUpload('fileUploadProjects', 'fileTitleProjects', 'fileDescriptionProjects', uploadPreviewProjects, 'Projects');
         });
     }
+
+    // Initialize admin features
+    toggleAdminFeatures();
 });
