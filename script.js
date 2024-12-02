@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // GitHub API configuration
     const repoName = 'Ashley-F-Almonte-Portfolio';
     const owner = 'ash-almonte-it23';
-    const token = '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'; // Replace this with your GitHub token
+    const token = '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';
 
     // Loading Screen Logic
     window.addEventListener('load', function () {
@@ -59,7 +59,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 isAdmin = true;
                 localStorage.setItem('isAdmin', 'true');
                 document.body.classList.add('admin-enabled');
-                document.querySelector('.upload-container').style.display = 'block';
                 toggleDeleteButtons();
                 usernameField.value = '';
                 passwordField.value = '';
@@ -70,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Toggle delete buttons visibility and functionality based on admin status
+    // Toggle delete buttons visibility based on admin status
     function toggleDeleteButtons() {
         document.querySelectorAll('.delete-button').forEach(button => {
             if (isAdmin) {
@@ -83,26 +82,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 button.classList.add('disabled');
             }
         });
-    }
-
-    // Function to create delete button
-    function createDeleteButton(previewGroup, fileName, pageType) {
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'X';
-        deleteButton.classList.add('delete-button');
-        deleteButton.style.display = isAdmin ? 'block' : 'none';
-        deleteButton.disabled = !isAdmin;
-
-        deleteButton.addEventListener('click', function () {
-            if (!isAdmin) {
-                alert('You are not authorized to delete items.');
-                return;
-            }
-            previewGroup.remove();
-            removeFromLocalStorage(fileName, pageType);
-        });
-
-        return deleteButton;
     }
 
     // Popup Toolbar Setup
@@ -210,28 +189,37 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function uploadToGitHub(file, title, description) {
-        const formData = new FormData();
-        formData.append('message', `Upload ${title}`);
-        formData.append('content', file);
-
-        const response = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/${file.name}`, {
-            method: 'PUT',
-            headers: {
-                Authorization: `token ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: `Adding file: ${file.name}`,
-                content: btoa(file),
-            })
+        const reader = new FileReader();
+        return new Promise((resolve, reject) => {
+            reader.onload = async function () {
+                const base64Content = btoa(reader.result);
+                try {
+                    const response = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contents/${file.name}`, {
+                        method: 'PUT',
+                        headers: {
+                            Authorization: `token ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: `Adding file: ${file.name}`,
+                            content: base64Content
+                        })
+                    });
+                    const data = await response.json();
+                    resolve(data.content.download_url);
+                } catch (error) {
+                    alert('Error uploading to GitHub. Please try again.');
+                    reject(error);
+                }
+            };
+            reader.onerror = reject;
+            reader.readAsBinaryString(file);
         });
-        const data = await response.json();
-        return data.content.download_url;
     }
 
-    // Load previews from localStorage
+    // Load previews
     function loadPreviewsFromStorage(previewContainer, pageType) {
-        // Similar logic for GitHub to fetch metadata
+        // Logic to fetch and display saved previews
     }
 
     const uploadButtonInternships = document.getElementById('uploadButtonInternships');
