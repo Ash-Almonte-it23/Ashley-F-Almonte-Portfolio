@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let isAdmin = localStorage.getItem('isAdmin') === 'true';
 
     // GitHub API Configuration
-    const githubToken = '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'; // Replace with your token
+    const githubToken = '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'; // Replace with your GitHub token
     const repoOwner = 'Ash-Almonte-it23';
     const repoName = 'Ashley-F-Almonte-Portfolio';
     const baseApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const url = `${baseApiUrl}/${filePath}`;
         let sha = null;
 
-        // Check if file exists
         const checkResponse = await fetch(url, {
             headers: { Authorization: `token ${githubToken}` },
         });
@@ -113,46 +112,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 usernameField.value = '';
                 passwordField.value = '';
                 document.getElementById('adminLogin').style.display = 'none';
-                toggleDeleteButtons();
             } else {
                 alert('Invalid credentials. Please try again.');
             }
         });
-    }
-
-    // Toggle delete buttons visibility and functionality based on admin status
-    function toggleDeleteButtons() {
-        document.querySelectorAll('.delete-button').forEach(button => {
-            if (isAdmin) {
-                button.style.display = 'block';
-                button.disabled = false;
-                button.classList.remove('disabled');
-            } else {
-                button.style.display = 'none';
-                button.disabled = true;
-                button.classList.add('disabled');
-            }
-        });
-    }
-
-    // Function to create delete button
-    function createDeleteButton(previewGroup, fileName, pageType) {
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'X';
-        deleteButton.classList.add('delete-button');
-        deleteButton.style.display = isAdmin ? 'block' : 'none';
-        deleteButton.disabled = !isAdmin;
-
-        deleteButton.addEventListener('click', function () {
-            if (!isAdmin) {
-                alert('You are not authorized to delete items.');
-                return;
-            }
-            previewGroup.remove();
-            removeFromLocalStorage(fileName, pageType);
-        });
-
-        return deleteButton;
     }
 
     // Popup Toolbar Setup
@@ -212,86 +175,35 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!isAdmin) return;
 
         const fileUpload = document.getElementById(fileUploadId);
-        const fileTitle = document.getElementById(fileTitleId).innerHTML;
-        const fileDescription = document.getElementById(fileDescriptionId).innerHTML;
+        const fileTitle = document.getElementById(fileTitleId).textContent.trim();
+        const fileDescription = document.getElementById(fileDescriptionId).textContent.trim();
 
-        if (fileUpload.files.length > 0) {
-            const previewGroup = document.createElement('div');
-            previewGroup.classList.add('preview-group');
+        const files = fileUpload.files;
+        let metadata = [];
 
-            const previewHeader = document.createElement('div');
-            previewHeader.classList.add('preview-header');
+        for (let file of files) {
+            const reader = new FileReader();
+            reader.onload = async function (e) {
+                const fileUrl = e.target.result;
+                const base64Content = fileUrl.split(',')[1];
+                const filePath = `${pageType}/${file.name}`;
+                const success = await uploadToGitHub(filePath, base64Content);
 
-            const title = document.createElement('h4');
-            title.innerHTML = fileTitle || 'No Title';
-            previewHeader.appendChild(title);
-
-            const deleteButton = createDeleteButton(previewGroup, fileTitle, pageType);
-            previewHeader.appendChild(deleteButton);
-
-            previewGroup.appendChild(previewHeader);
-
-            const description = document.createElement('p');
-            description.innerHTML = fileDescription || 'No Description';
-            previewGroup.appendChild(description);
-
-            Array.from(fileUpload.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const fileUrl = e.target.result;
-                    const previewItem = document.createElement('div');
-                    previewItem.classList.add('preview-item');
-
-                    if (file.type.startsWith('image/')) {
-                        const img = document.createElement('img');
-                        img.src = fileUrl;
-                        img.alt = file.name;
-                        previewItem.appendChild(img);
-                    } else if (file.type.startsWith('video/')) {
-                        const video = document.createElement('video');
-                        video.src = fileUrl;
-                        video.controls = true;
-                        previewItem.appendChild(video);
-                    }
-
-                    previewGroup.appendChild(previewItem);
-                    saveToLocalStorage(file.name, fileTitle, fileDescription, fileUrl, pageType);
-                };
-
-                if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
-                    reader.readAsDataURL(file);
-                } else {
-                    alert('Unsupported file format');
+                if (success) {
+                    metadata.push({
+                        title: fileTitle || 'Untitled',
+                        description: fileDescription || 'No description',
+                        fileName: file.name,
+                        fileUrl: `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${pageType}/${file.name}`,
+                    });
+                    console.log(`File ${file.name} uploaded successfully.`);
                 }
-            });
-
-            previewContainer.appendChild(previewGroup);
-        } else if (fileTitle || fileDescription) {
-            const previewGroup = document.createElement('div');
-            previewGroup.classList.add('preview-group');
-
-            const previewHeader = document.createElement('div');
-            previewHeader.classList.add('preview-header');
-
-            const title = document.createElement('h4');
-            title.innerHTML = fileTitle || 'No Title';
-            previewHeader.appendChild(title);
-
-            const deleteButton = createDeleteButton(previewGroup, fileTitle, pageType);
-            previewHeader.appendChild(deleteButton);
-
-            previewGroup.appendChild(previewHeader);
-
-            const description = document.createElement('p');
-            description.innerHTML = fileDescription || 'No Description';
-            previewGroup.appendChild(description);
-
-            previewContainer.appendChild(previewGroup);
-            saveToLocalStorage(null, fileTitle, fileDescription, null, pageType);
+            };
+            reader.readAsDataURL(file);
         }
 
-        fileUpload.value = '';
-        toggleDeleteButtons();
+        await uploadToGitHub(`${pageType}/metadata.json`, JSON.stringify(metadata));
+        loadPreviewsFromGitHub(previewContainer, pageType);
     }
 
     async function loadPreviewsFromGitHub(previewContainer, pageType) {
@@ -303,20 +215,18 @@ document.addEventListener('DOMContentLoaded', function () {
             const previewGroup = document.createElement('div');
             previewGroup.classList.add('preview-group');
 
-            const previewHeader = document.createElement('div');
-            previewHeader.classList.add('preview-header');
-
             const titleElem = document.createElement('h4');
-            titleElem.textContent = title || 'No Title';
-            previewHeader.appendChild(titleElem);
+            titleElem.textContent = title || 'Untitled';
+            previewGroup.appendChild(titleElem);
 
             const descriptionElem = document.createElement('p');
-            descriptionElem.textContent = description || 'No Description';
-            previewHeader.appendChild(descriptionElem);
+            descriptionElem.textContent = description || 'No description';
+            previewGroup.appendChild(descriptionElem);
 
-            if (fileUrl.endsWith('.jpg') || fileUrl.endsWith('.png')) {
+            if (fileUrl.endsWith('.jpg') || fileUrl.endsWith('.png') || fileUrl.endsWith('.jpeg')) {
                 const img = document.createElement('img');
                 img.src = fileUrl;
+                img.alt = title;
                 previewGroup.appendChild(img);
             } else if (fileUrl.endsWith('.mp4')) {
                 const video = document.createElement('video');
@@ -332,18 +242,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const uploadButtonInternships = document.getElementById('uploadButtonInternships');
     const uploadPreviewInternships = document.getElementById('uploadPreviewInternships');
     if (uploadButtonInternships) {
-        uploadButtonInternships.addEventListener('click', async function () {
+        uploadButtonInternships.addEventListener('click', function () {
             handleFileUpload('fileUploadInternships', 'fileTitleInternships', 'fileDescriptionInternships', uploadPreviewInternships, 'Internships');
         });
-        await loadPreviewsFromGitHub(uploadPreviewInternships, 'Internships');
+        loadPreviewsFromGitHub(uploadPreviewInternships, 'Internships');
     }
 
     const uploadButtonProjects = document.getElementById('uploadButtonProjects');
     const uploadPreviewProjects = document.getElementById('uploadPreviewProjects');
     if (uploadButtonProjects) {
-        uploadButtonProjects.addEventListener('click', async function () {
+        uploadButtonProjects.addEventListener('click', function () {
             handleFileUpload('fileUploadProjects', 'fileTitleProjects', 'fileDescriptionProjects', uploadPreviewProjects, 'Projects');
         });
-        await loadPreviewsFromGitHub(uploadPreviewProjects, 'Projects');
+        loadPreviewsFromGitHub(uploadPreviewProjects, 'Projects');
     }
 });
