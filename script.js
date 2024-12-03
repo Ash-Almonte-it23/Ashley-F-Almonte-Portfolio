@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const url = `${baseApiUrl}/${filePath}`;
         let sha = null;
 
-        // Check if file exists
         const checkResponse = await fetch(url, {
             headers: { Authorization: `token ${githubToken}` },
         });
@@ -24,7 +23,6 @@ document.addEventListener('DOMContentLoaded', function () {
             sha = fileData.sha;
         }
 
-        // Upload or update the file
         const response = await fetch(url, {
             method: 'PUT',
             headers: {
@@ -33,8 +31,8 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify({
                 message: `Add or update ${filePath}`,
-                content: btoa(content), // Encode content to Base64
-                sha: sha, // Include SHA if updating
+                content: btoa(content),
+                sha: sha,
             }),
         });
 
@@ -42,7 +40,6 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('GitHub upload error:', await response.json());
             return false;
         }
-
         return true;
     }
 
@@ -144,8 +141,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         toolbar.querySelectorAll('button').forEach(button => {
+            const command = button.dataset.command;
             button.addEventListener('click', () => {
-                const command = button.dataset.command;
                 if (command === 'increaseFont') {
                     document.execCommand('fontSize', false, '4');
                 } else if (command === 'decreaseFont') {
