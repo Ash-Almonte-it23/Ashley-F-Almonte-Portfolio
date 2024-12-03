@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let isAdmin = localStorage.getItem('isAdmin') === 'true';
 
     // GitHub API Configuration
-    const githubToken = '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'; // Replace with your token
+    const githubToken = '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'; // Replace with your GitHub token
     const repoOwner = 'Ash-Almonte-it23';
     const repoName = 'Ashley-F-Almonte-Portfolio';
     const baseApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
@@ -14,14 +14,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const url = `${baseApiUrl}/${filePath}`;
         let sha = null;
 
-        // Check if file already exists
+        // Check if file exists
         const checkResponse = await fetch(url, {
             headers: { Authorization: `token ${githubToken}` },
         });
 
         if (checkResponse.ok) {
             const fileData = await checkResponse.json();
-            sha = fileData.sha; // Get SHA for the existing file
+            sha = fileData.sha;
         }
 
         // Upload or update the file
@@ -38,14 +38,27 @@ document.addEventListener('DOMContentLoaded', function () {
             }),
         });
 
-        const data = await response.json();
         if (!response.ok) {
-            console.error('GitHub upload error:', data);
+            console.error('GitHub upload error:', await response.json());
             return false;
         }
 
-        console.log('GitHub upload success:', data);
         return true;
+    }
+
+    async function fetchFromGitHub(filePath) {
+        const url = `${baseApiUrl}/${filePath}`;
+        const response = await fetch(url, {
+            headers: { Authorization: `token ${githubToken}` },
+        });
+
+        if (!response.ok) {
+            console.error(`GitHub fetch error for ${filePath}:`, response.statusText);
+            return null;
+        }
+
+        const data = await response.json();
+        return JSON.parse(atob(data.content));
     }
 
     // Loading Screen Logic
@@ -99,25 +112,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 localStorage.setItem('isAdmin', 'true');
                 document.body.classList.add('admin-enabled');
                 document.querySelector('.upload-container').style.display = 'block';
-                toggleDeleteButtons();
                 usernameField.value = '';
                 passwordField.value = '';
                 document.getElementById('adminLogin').style.display = 'none';
             } else {
                 alert('Invalid credentials. Please try again.');
-            }
-        });
-    }
-
-    // Toggle delete buttons visibility and functionality based on admin status
-    function toggleDeleteButtons() {
-        document.querySelectorAll('.delete-button').forEach(button => {
-            if (isAdmin) {
-                button.style.display = 'block';
-                button.disabled = false;
-            } else {
-                button.style.display = 'none';
-                button.disabled = true;
             }
         });
     }
@@ -154,6 +153,12 @@ document.addEventListener('DOMContentLoaded', function () {
         toolbar.querySelector('input[type="color"]').addEventListener('input', (event) => {
             document.execCommand('foreColor', false, event.target.value);
         });
+
+        document.addEventListener('mousedown', function (event) {
+            if (!toolbar.contains(event.target) && !container.contains(event.target)) {
+                toolbar.style.display = 'none';
+            }
+        });
     }
 
     setupPopupToolbar('fileTitleInternships', 'popupToolbarTitleInternships');
@@ -161,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setupPopupToolbar('fileTitleProjects', 'popupToolbarTitleProjects');
     setupPopupToolbar('fileDescriptionProjects', 'popupToolbarDescriptionProjects');
 
-    // File Upload Logic and Preview Loading
+    // File Upload and Preview Logic
     async function handleFileUpload(fileUploadId, fileTitleId, fileDescriptionId, previewContainer, pageType) {
         if (!isAdmin) return;
 
@@ -170,35 +175,73 @@ document.addEventListener('DOMContentLoaded', function () {
         const fileDescription = document.getElementById(fileDescriptionId).innerHTML.trim();
 
         const files = fileUpload.files;
+        let metadata = [];
+
         for (let file of files) {
             const reader = new FileReader();
             reader.onload = async function (e) {
                 const fileUrl = e.target.result;
-                const base64Content = fileUrl.split(',')[1]; // Extract Base64 content
+                const base64Content = fileUrl.split(',')[1];
                 const filePath = `${pageType}/${file.name}`;
                 const success = await uploadToGitHub(filePath, base64Content);
+
                 if (success) {
+                    metadata.push({
+                        title: fileTitle || 'Untitled',
+                        description: fileDescription || 'No description',
+                        fileName: file.name,
+                        fileUrl: `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${pageType}/${file.name}`,
+                    });
                     console.log(`File ${file.name} uploaded successfully.`);
                 }
             };
-            reader.readAsDataURL(file); // Read file as Base64
+            reader.readAsDataURL(file);
         }
 
-        // Upload metadata as JSON
-        const metadata = {
-            title: fileTitle || 'Untitled',
-            description: fileDescription || 'No description',
-        };
         await uploadToGitHub(`${pageType}/metadata.json`, JSON.stringify(metadata));
+        loadPreviewsFromGitHub(previewContainer, pageType);
     }
 
-    // Initialize upload buttons and preview loading
+    async function loadPreviewsFromGitHub(previewContainer, pageType) {
+        const metadata = await fetchFromGitHub(`${pageType}/metadata.json`);
+        if (!metadata) return;
+
+        previewContainer.innerHTML = '';
+        metadata.forEach(({ title, description, fileUrl }) => {
+            const previewGroup = document.createElement('div');
+            previewGroup.classList.add('preview-group');
+
+            const titleElem = document.createElement('h4');
+            titleElem.textContent = title || 'Untitled';
+            previewGroup.appendChild(titleElem);
+
+            const descriptionElem = document.createElement('p');
+            descriptionElem.textContent = description || 'No description';
+            previewGroup.appendChild(descriptionElem);
+
+            if (fileUrl.endsWith('.jpg') || fileUrl.endsWith('.png') || fileUrl.endsWith('.jpeg')) {
+                const img = document.createElement('img');
+                img.src = fileUrl;
+                img.alt = title;
+                previewGroup.appendChild(img);
+            } else if (fileUrl.endsWith('.mp4')) {
+                const video = document.createElement('video');
+                video.src = fileUrl;
+                video.controls = true;
+                previewGroup.appendChild(video);
+            }
+
+            previewContainer.appendChild(previewGroup);
+        });
+    }
+
     const uploadButtonInternships = document.getElementById('uploadButtonInternships');
     const uploadPreviewInternships = document.getElementById('uploadPreviewInternships');
     if (uploadButtonInternships) {
         uploadButtonInternships.addEventListener('click', function () {
             handleFileUpload('fileUploadInternships', 'fileTitleInternships', 'fileDescriptionInternships', uploadPreviewInternships, 'Internships');
         });
+        loadPreviewsFromGitHub(uploadPreviewInternships, 'Internships');
     }
 
     const uploadButtonProjects = document.getElementById('uploadButtonProjects');
@@ -207,5 +250,6 @@ document.addEventListener('DOMContentLoaded', function () {
         uploadButtonProjects.addEventListener('click', function () {
             handleFileUpload('fileUploadProjects', 'fileTitleProjects', 'fileDescriptionProjects', uploadPreviewProjects, 'Projects');
         });
+        loadPreviewsFromGitHub(uploadPreviewProjects, 'Projects');
     }
 });
