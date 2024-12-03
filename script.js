@@ -145,7 +145,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         toolbar.querySelectorAll('button').forEach(button => {
             button.addEventListener('click', () => {
-                document.execCommand(button.title.toLowerCase(), false, null);
+                const command = button.dataset.command;
+                if (command === 'increaseFont') {
+                    document.execCommand('fontSize', false, '4');
+                } else if (command === 'decreaseFont') {
+                    document.execCommand('fontSize', false, '2');
+                } else {
+                    document.execCommand(command, false, null);
+                }
                 toolbar.style.display = 'none';
             });
         });
@@ -171,8 +178,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!isAdmin) return;
 
         const fileUpload = document.getElementById(fileUploadId);
-        const fileTitle = document.getElementById(fileTitleId).innerHTML.trim();
-        const fileDescription = document.getElementById(fileDescriptionId).innerHTML.trim();
+        const fileTitle = document.getElementById(fileTitleId).textContent.trim();
+        const fileDescription = document.getElementById(fileDescriptionId).textContent.trim();
 
         const files = fileUpload.files;
         let metadata = [];
