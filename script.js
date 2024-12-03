@@ -5,46 +5,47 @@ document.addEventListener('DOMContentLoaded', function () {
     let isAdmin = localStorage.getItem('isAdmin') === 'true';
 
     // GitHub API Configuration
-    const githubToken = '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';
+    const githubToken = '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'; // Replace with your token
     const repoOwner = 'Ash-Almonte-it23';
     const repoName = 'Ashley-F-Almonte-Portfolio';
     const baseApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
 
     async function uploadToGitHub(filePath, content) {
         const url = `${baseApiUrl}/${filePath}`;
+        let sha = null;
+
+        // Check if file already exists
+        const checkResponse = await fetch(url, {
+            headers: { Authorization: `token ${githubToken}` },
+        });
+
+        if (checkResponse.ok) {
+            const fileData = await checkResponse.json();
+            sha = fileData.sha; // Get SHA for the existing file
+        }
+
+        // Upload or update the file
         const response = await fetch(url, {
             method: 'PUT',
             headers: {
                 Authorization: `token ${githubToken}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 message: `Add or update ${filePath}`,
-                content: btoa(content),
-            })
+                content: btoa(content), // Encode content to Base64
+                sha: sha, // Include SHA if updating
+            }),
         });
 
-        if (!response.ok) {
-            const error = await response.json();
-            console.error('GitHub upload error:', error);
-        }
-        return response.ok;
-    }
-
-    async function fetchFromGitHub(filePath) {
-        const url = `${baseApiUrl}/${filePath}`;
-        const response = await fetch(url, {
-            headers: {
-                Authorization: `token ${githubToken}`
-            }
-        });
-
-        if (!response.ok) {
-            console.error('GitHub fetch error:', response.statusText);
-            return null;
-        }
         const data = await response.json();
-        return atob(data.content);
+        if (!response.ok) {
+            console.error('GitHub upload error:', data);
+            return false;
+        }
+
+        console.log('GitHub upload success:', data);
+        return true;
     }
 
     // Loading Screen Logic
@@ -169,18 +170,25 @@ document.addEventListener('DOMContentLoaded', function () {
         const fileDescription = document.getElementById(fileDescriptionId).innerHTML.trim();
 
         const files = fileUpload.files;
-
         for (let file of files) {
             const reader = new FileReader();
             reader.onload = async function (e) {
                 const fileUrl = e.target.result;
+                const base64Content = fileUrl.split(',')[1]; // Extract Base64 content
                 const filePath = `${pageType}/${file.name}`;
-                await uploadToGitHub(filePath, fileUrl.split(',')[1]);
+                const success = await uploadToGitHub(filePath, base64Content);
+                if (success) {
+                    console.log(`File ${file.name} uploaded successfully.`);
+                }
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(file); // Read file as Base64
         }
 
-        const metadata = { title: fileTitle || 'Untitled', description: fileDescription || 'No description' };
+        // Upload metadata as JSON
+        const metadata = {
+            title: fileTitle || 'Untitled',
+            description: fileDescription || 'No description',
+        };
         await uploadToGitHub(`${pageType}/metadata.json`, JSON.stringify(metadata));
     }
 
