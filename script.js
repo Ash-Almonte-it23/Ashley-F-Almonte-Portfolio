@@ -16,20 +16,26 @@ document.addEventListener('DOMContentLoaded', function () {
             const baseApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
             const url = `${baseApiUrl}/${testFileName}`;
 
+            console.log('Starting test upload...');
+            console.log('Upload URL:', url);
+
             let sha = null;
             const checkResponse = await fetch(url, {
-                headers: { Authorization: `token ${githubToken}` },
+                headers: { Authorization: `Bearer ${githubToken}` }, // Updated to Bearer
             });
 
             if (checkResponse.ok) {
                 const fileData = await checkResponse.json();
                 sha = fileData.sha;
+                console.log('SHA of existing file:', sha);
+            } else {
+                console.warn('No existing file. Proceeding with a new upload.');
             }
 
             const response = await fetch(url, {
                 method: 'PUT',
                 headers: {
-                    Authorization: `token ${githubToken}`,
+                    Authorization: `Bearer ${githubToken}`, // Updated to Bearer
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
@@ -43,6 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Test upload failed:', await response.json());
                 alert('Test upload failed. Check the console for details.');
             } else {
+                console.log('Test upload successful:', await response.json());
                 alert('Test upload successful!');
             }
         } catch (error) {
@@ -50,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('An error occurred. Check the console for details.');
         }
     });
+
     // rest of the code 
     
     const darkModeToggle = document.getElementById('dark-mode-toggle');
@@ -65,21 +73,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function uploadToGitHub(filePath, content) {
         const url = `${baseApiUrl}/${filePath}`;
+        console.log('Uploading to:', url);
+
         let sha = null;
 
         const checkResponse = await fetch(url, {
-            headers: { Authorization: `token ${githubToken}` },
+            headers: { Authorization: `Bearer ${githubToken}` }, // Updated to Bearer
         });
 
         if (checkResponse.ok) {
             const fileData = await checkResponse.json();
             sha = fileData.sha;
+            console.log('SHA of existing file:', sha);
+        } else {
+            console.warn('No existing SHA found.');
         }
 
         const response = await fetch(url, {
             method: 'PUT',
             headers: {
-                Authorization: `token ${githubToken}`,
+                Authorization: `Bearer ${githubToken}`, // Updated to Bearer
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
@@ -93,21 +106,25 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('GitHub upload error:', await response.json());
             return false;
         }
+        console.log('File uploaded successfully.');
         return true;
     }
 
     async function fetchFromGitHub(filePath) {
         const url = `${baseApiUrl}/${filePath}`;
+        console.log('Fetching file from:', url);
+
         const response = await fetch(url, {
-            headers: { Authorization: `token ${githubToken}` },
+            headers: { Authorization: `Bearer ${githubToken}` }, // Updated to Bearer
         });
 
         if (!response.ok) {
-            console.error(`GitHub fetch error for ${filePath}:`, response.statusText);
+            console.error('GitHub fetch error:', await response.text());
             return null;
         }
 
         const data = await response.json();
+        console.log('File fetched successfully:', data);
         return JSON.parse(atob(data.content));
     }
 
