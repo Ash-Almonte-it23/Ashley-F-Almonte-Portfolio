@@ -1,4 +1,57 @@
 document.addEventListener('DOMContentLoaded', function () {
+
+     // Test Script to Debug File Upload
+    const testUploadButton = document.createElement('button');
+    testUploadButton.textContent = 'Test Upload';
+    testUploadButton.style = 'position: fixed; top: 20px; left: 20px; z-index: 1000;';
+    document.body.appendChild(testUploadButton);
+
+    testUploadButton.addEventListener('click', async function () {
+        try {
+            const testFileName = 'testFile.txt';
+            const testFileContent = 'This is a test file content';
+            const githubToken = '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'; // Replace with actual token
+            const repoOwner = 'Ash-Almonte-it23';
+            const repoName = 'Ashley-F-Almonte-Portfolio';
+            const baseApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
+            const url = `${baseApiUrl}/${testFileName}`;
+
+            let sha = null;
+            const checkResponse = await fetch(url, {
+                headers: { Authorization: `token ${githubToken}` },
+            });
+
+            if (checkResponse.ok) {
+                const fileData = await checkResponse.json();
+                sha = fileData.sha;
+            }
+
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    Authorization: `token ${githubToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: `Test upload for ${testFileName}`,
+                    content: btoa(testFileContent),
+                    sha: sha,
+                }),
+            });
+
+            if (!response.ok) {
+                console.error('Test upload failed:', await response.json());
+                alert('Test upload failed. Check the console for details.');
+            } else {
+                alert('Test upload successful!');
+            }
+        } catch (error) {
+            console.error('Error during test upload:', error);
+            alert('An error occurred. Check the console for details.');
+        }
+    });
+    // rest of the code 
+    
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const body = document.body;
     const loadingScreen = document.getElementById('loadingScreen');
