@@ -1,0 +1,24 @@
+name: Handle File Uploads
+
+on:
+  workflow_dispatch: # Allows manual or API-triggered runs
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Upload File
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_PORTFOLIO_WEB }}
+        run: |
+          echo "Adding a test file..."
+          echo "Test file content" > testFile.txt
+          git config --global user.name "YourName"
+          git config --global user.email "your-email@example.com"
+          git add testFile.txt
+          git commit -m "Added testFile.txt via GitHub Actions"
+          git push
