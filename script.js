@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const testFileName = 'testFile.txt';
             const testFileContent = 'This is a test file content';
-            const githubToken = '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'; // Replace with actual token
+            const githubToken = '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'; // Replace with actual token
             const repoOwner = 'Ash-Almonte-it23';
             const repoName = 'Ashley-F-Almonte-Portfolio';
             const baseApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let isAdmin = localStorage.getItem('isAdmin') === 'true';
 
     // GitHub API Configuration
-    const githubToken = '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'; // Replace with your GitHub token
+    const githubToken = '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'; // Replace with your GitHub token
     const repoOwner = 'Ash-Almonte-it23';
     const repoName = 'Ashley-F-Almonte-Portfolio';
     const baseApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
