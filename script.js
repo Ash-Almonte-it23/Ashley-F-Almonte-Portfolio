@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const testFileName = 'testFile.txt';
             const testFileContent = 'This is a test file content';
-            const githubToken = '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'; // Replace with actual token
             const repoOwner = 'Ash-Almonte-it23';
             const repoName = 'Ashley-F-Almonte-Portfolio';
             const baseApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
@@ -20,8 +19,12 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('Upload URL:', url);
 
             let sha = null;
+
+            // Fetch SHA if file exists
             const checkResponse = await fetch(url, {
-                headers: { Authorization: `Bearer ${githubToken}` }, // Updated to Bearer
+                headers: {
+                    Authorization: `Bearer ${process.env.GITHUB_TOKEN}` // Token now comes from environment variable
+                }
             });
 
             if (checkResponse.ok) {
@@ -32,10 +35,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.warn('No existing file. Proceeding with a new upload.');
             }
 
+            // Upload or update file
             const response = await fetch(url, {
                 method: 'PUT',
                 headers: {
-                    Authorization: `Bearer ${githubToken}`, // Updated to Bearer
+                    Authorization: `Bearer ${process.env.GITHUB_TOKEN}`, // Token now comes from environment variable
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
@@ -58,15 +62,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // rest of the code 
-    
+    // Rest of the code (unchanged)
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const body = document.body;
     const loadingScreen = document.getElementById('loadingScreen');
     let isAdmin = localStorage.getItem('isAdmin') === 'true';
 
-    // GitHub API Configuration
-    const githubToken = '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'; // Replace with your GitHub token
+    // GitHub API Configuration (Removed token from here)
     const repoOwner = 'Ash-Almonte-it23';
     const repoName = 'Ashley-F-Almonte-Portfolio';
     const baseApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
@@ -77,8 +79,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         let sha = null;
 
+        // Fetch SHA if file exists
         const checkResponse = await fetch(url, {
-            headers: { Authorization: `Bearer ${githubToken}` }, // Updated to Bearer
+            headers: {
+                Authorization: `Bearer ${process.env.GITHUB_TOKEN}` // Token from environment variable
+            }
         });
 
         if (checkResponse.ok) {
@@ -89,10 +94,11 @@ document.addEventListener('DOMContentLoaded', function () {
             console.warn('No existing SHA found.');
         }
 
+        // Upload or update file
         const response = await fetch(url, {
             method: 'PUT',
             headers: {
-                Authorization: `Bearer ${githubToken}`, // Updated to Bearer
+                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`, // Token from environment variable
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
@@ -115,7 +121,9 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('Fetching file from:', url);
 
         const response = await fetch(url, {
-            headers: { Authorization: `Bearer ${githubToken}` }, // Updated to Bearer
+            headers: {
+                Authorization: `Bearer ${process.env.GITHUB_TOKEN}` // Token from environment variable
+            }
         });
 
         if (!response.ok) {
