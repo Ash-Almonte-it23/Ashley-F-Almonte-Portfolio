@@ -2,23 +2,34 @@ name: Handle File Uploads
 
 on:
   workflow_dispatch: # Allows manual or API-triggered runs
+    inputs: # Define inputs for the workflow
+      fileName:
+        description: 'Name of the file to upload'
+        required: true
+        default: 'testFile.txt'
+      fileContent:
+        description: 'Content of the file to upload'
+        required: true
+        default: 'Test file content'
 
 jobs:
   upload:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the repository
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      # Upload the file
       - name: Upload File
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN_PORTFOLIO_WEB }}
         run: |
-          echo "Adding a test file..."
-          echo "Test file content" > testFile.txt
-          git config --global user.name "YourName"
-          git config --global user.email "your-email@example.com"
-          git add testFile.txt
-          git commit -m "Added testFile.txt via GitHub Actions"
+          echo "Adding the file: ${{ github.event.inputs.fileName }}"
+          echo "${{ github.event.inputs.fileContent }}" > ${{ github.event.inputs.fileName }}
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add ${{ github.event.inputs.fileName }}
+          git commit -m "Added ${{ github.event.inputs.fileName }} via GitHub Actions"
           git push
