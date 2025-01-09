@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const testFileName = 'testFile.txt';
             const testFileContent = 'This is a test file content';
-            const githubToken = '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'; // Replace with actual token
+            const githubToken = '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'; // Replace with actual token
             const repoOwner = 'Ash-Almonte-it23';
             const repoName = 'Ashley-F-Almonte-Portfolio';
             const baseApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let isAdmin = localStorage.getItem('isAdmin') === 'true';
 
     // GitHub API Configuration
-    const githubToken = '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'; // Replace with your GitHub token
+    const githubToken = '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'; // Replace with your GitHub token
     const repoOwner = 'Ash-Almonte-it23';
     const repoName = 'Ashley-F-Almonte-Portfolio';
     const baseApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
