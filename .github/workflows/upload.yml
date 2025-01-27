@@ -2,7 +2,7 @@ name: Handle File Uploads
 
 on:
   workflow_dispatch: # Allows manual or API-triggered runs
-    inputs: # Define inputs for the workflow
+    inputs:
       fileName:
         description: 'Name of the file to upload'
         required: true
@@ -21,6 +21,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      # Configure Git user credentials
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
       # Upload the file
       - name: Upload File
         env:
@@ -28,8 +34,6 @@ jobs:
         run: |
           echo "Adding the file: ${{ github.event.inputs.fileName }}"
           echo "${{ github.event.inputs.fileContent }}" > ${{ github.event.inputs.fileName }}
-          git config --global user.name "GitHub Actions Bot"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add ${{ github.event.inputs.fileName }}
           git commit -m "Added ${{ github.event.inputs.fileName }} via GitHub Actions"
-          git push
+          git push https://x-access-token:${{ secrets.TOKEN_PORTFOLIO_WEB }}@github.com/${{ github.repository }} HEAD:main
