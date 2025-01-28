@@ -17,18 +17,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
+      # Step 1: Checkout the repository
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Configure Git User
-      - name: Set Up Git
+      # Step 2: Set up Git user configuration
+      - name: Configure Git User
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      # Create and Push File
-      - name: Upload File
+      # Step 3: Create and push file to the repository
+      - name: Create and Upload File
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN_PORTFOLIO_WEB }}
         run: |
