@@ -21,13 +21,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Configure Git user credentials
-      - name: Configure Git
+      # Configure Git User
+      - name: Set Up Git
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      # Upload the file
+      # Create and Push File
       - name: Upload File
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN_PORTFOLIO_WEB }}
