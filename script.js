@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-
     // Test Script to Debug File Upload
     const testUploadButton = document.createElement('button');
     testUploadButton.textContent = 'Test Upload';
@@ -23,8 +22,8 @@ document.addEventListener('DOMContentLoaded', function () {
             // Fetch SHA if file exists
             const checkResponse = await fetch(url, {
                 headers: {
-                    Authorization: `Bearer ${process.env.GITHUB_TOKEN}` // Token now comes from environment variable
-                }
+                    Authorization: `Bearer ${TOKEN_PORTFOLIO_WEB}`, // Use injected secret from environment variable
+                },
             });
 
             if (checkResponse.ok) {
@@ -39,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const response = await fetch(url, {
                 method: 'PUT',
                 headers: {
-                    Authorization: `Bearer ${process.env.GITHUB_TOKEN}`, // Token now comes from environment variable
+                    Authorization: `Bearer ${TOKEN_PORTFOLIO_WEB}`, // Use injected secret from environment variable
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
@@ -62,13 +61,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Rest of the code (unchanged)
+    // Rest of the code
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const body = document.body;
     const loadingScreen = document.getElementById('loadingScreen');
     let isAdmin = localStorage.getItem('isAdmin') === 'true';
 
-    // GitHub API Configuration (Removed token from here)
     const repoOwner = 'Ash-Almonte-it23';
     const repoName = 'Ashley-F-Almonte-Portfolio';
     const baseApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
@@ -82,8 +80,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // Fetch SHA if file exists
         const checkResponse = await fetch(url, {
             headers: {
-                Authorization: `Bearer ${process.env.GITHUB_TOKEN}` // Token from environment variable
-            }
+                Authorization: `Bearer ${TOKEN_PORTFOLIO_WEB}`, // Use injected secret from environment variable
+            },
         });
 
         if (checkResponse.ok) {
@@ -98,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const response = await fetch(url, {
             method: 'PUT',
             headers: {
-                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`, // Token from environment variable
+                Authorization: `Bearer ${TOKEN_PORTFOLIO_WEB}`, // Use injected secret from environment variable
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
@@ -122,8 +120,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const response = await fetch(url, {
             headers: {
-                Authorization: `Bearer ${process.env.GITHUB_TOKEN}` // Token from environment variable
-            }
+                Authorization: `Bearer ${TOKEN_PORTFOLIO_WEB}`, // Use injected secret from environment variable
+            },
         });
 
         if (!response.ok) {
