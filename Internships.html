@@ -20,23 +20,6 @@
                     <span class="slider"></span>
                 </label>
             </div>
-            <!-- Admin Login Form -->
-            <div id="adminLogin" class="block-cube">
-                <form autocomplete="off">
-                    <div class="control block-cube block-input">
-                        <input type="text" id="username" placeholder="Username">
-                    </div>
-                    <div class="control block-cube block-input">
-                        <input type="password" id="password" placeholder="Password">
-                    </div>
-                    <button type="button" id="loginButton" class="btn block-cube block-cube-hover">
-                        <div class="bg-top"><div class="bg-inner"></div></div>
-                        <div class="bg-right"><div class="bg-inner"></div></div>
-                        <div class="bg"><div class="bg-inner"></div></div>
-                        <div class="text">Log In</div>
-                    </button>
-                </form>
-            </div>
         </div>
 
         <div class="navigation">
@@ -48,34 +31,34 @@
             <h2>Internship Title</h2>
             <p>Description of the internship experience...</p>
         </div>
+        
+    <div class="internship-container">
+            <!-- Internship 1 -->
+            <div class="entry-box">
+                <h3>Data Science Researcher</h3>
+                <p><strong>Company:</strong> The Data Mine - Purdue University</p>
+                <p><strong>Duration:</strong> August 2023 - April 2024</p>
+                <p>Explored machine learning applications for drug discovery, analyzing proprietary data and training predictive models.</p>
+                <div class="entry-media">
+                    <img src="images/internship-example.jpg" alt="Data Science Research Image">
+                    <video controls>
+                        <source src="videos/internship-demo.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
 
-        <div class="upload-container" style="display:none;">
-            <h2>Upload Files</h2>
-            <input type="file" id="fileUploadInternships" multiple>
-            <div contenteditable="true" id="fileTitleInternships" class="editable-div" placeholder="Enter file title">Enter file title</div>
-            <div class="popup-toolbar" id="popupToolbarTitleInternships">
-                <button type="button" title="Bold"><b>B</b></button>
-                <button type="button" title="Italic"><i>I</i></button>
-                <button type="button" title="Underline"><u>U</u></button>
-                <button type="button" title="Increase Font Size">A+</button>
-                <button type="button" title="Decrease Font Size">A-</button>
-                <input type="color" title="Font Color">
+            <!-- Internship 2 -->
+            <div class="entry-box">
+                <h3>Senior Data Analyst</h3>
+                <p><strong>Company:</strong> Access: Supports for Living</p>
+                <p><strong>Duration:</strong> March 2024 - August 2024</p>
+                <p>Created data visualizations using Tableau and Excel, focusing on employee demographics and cybersecurity analysis.</p>
+                <div class="entry-media">
+                    <img src="images/internship2.jpg" alt="Data Analysis Image">
+                </div>
             </div>
-            <div contenteditable="true" id="fileDescriptionInternships" class="editable-div" placeholder="Enter file description">Enter file description</div>
-            <div class="popup-toolbar" id="popupToolbarDescriptionInternships">
-                <button type="button" title="Bold"><b>B</b></button>
-                <button type="button" title="Italic"><i>I</i></button>
-                <button type="button" title="Underline"><u>U</u></button>
-                <button type="button" title="Increase Font Size">A+</button>
-                <button type="button" title="Decrease Font Size">A-</button>
-                <input type="color" title="Font Color">
-            </div>
-            <button id="uploadButtonInternships" class="button-85">Upload</button>
         </div>
-
-        <div id="uploadPreviewInternships" class="upload-preview"></div>
-    </div>
-
     <script src="script.js" defer></script>
 </body>
 </html>
