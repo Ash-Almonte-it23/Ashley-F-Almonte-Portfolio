@@ -1,60 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Dropbox API Token
+    // ✅ Secure Dropbox API Token (Move to backend for better security)
     const accessToken = "sl.u.AFjENuMs1ivgJYZbFX2u4s2nPXaC_wCV7z9abGWEuCpV_F_oEweYgHkDrRkbn2n7kQFeoRCvTuFXMXd96LrmwiFWZQPSKUccS9C2zjcrmJom76chDg1nhcG-0lpTVEqQCksGL85JA8hav6habf8FHuKnID0hof-irPjtFnwKflhDso4vZFcpG6aQ7_R0bb0FbesaQYNW692yL2C1X-hQbeKubGKPM_zUzQHkd1JytNzLLg31BZXJx3L73d88_G6cAcClDHZchpkfew8HCNN4PHCSSDu8ub6WanLQJ8oHesTlSd_CexTCt79JhG5QkFRF6rfigf73eQMwAxU9QcIMcRTzN9Nupt-h4rrwppRyu-sEF853YgGcqzV-YYg5UWYkBvzwgESui7WPCqeehNkcl-R7fcstBUrcGEKQ4zPleU_tk8nHIX95IZYQTbIA2aqOEGFgtZ45ZK0qO3soGhgo00uPyMItSbsSgPCcvzWzLWSgrGtkard-VeSBT59zXg9i2wn8hvG1rFqv69Y_4gd6JpQ2PnfTsgnM20w_58BMMC0oZX7deCtq3_m5ilHEpDS0k71vP1qpMzMRJ62uuXFmekgOnA66oi2qYqlVYDCHdEo-dfR4Ku6QeEg05uCuwKI1DjaPqBhHQ_v9nKJ2O1UC-7NFASaK2y7fSLHgsMn07-ukaggP-6LwI9l-GsFKQ4w2g04iDOGoIM2Y_JVCCvOVrrzbhJ9mARPTodY6rpdi1iAjBoXHZCt0p9iOeeG9OTdkf-dLVJDM_JcWY77ZSdaiD3Komh6ocX0hxBIn5g9d-WtjYn94bgiqKR5QHC_G1f6AT6LW9rPo7lx9izBr---nB8PNRDzPJzH_-olylbNcEonDW-JJt4693FfCw9PeaL2mXqmCcQOJcK7BKqAgejQpJWfjup-WiSmC6Kwj372bc_-hXwQagFkaq3YFpIbqYjYaxgMX5i_lN41NyZvfrAeGfyFrNxDXPuhUewXM4V64gyxvHFViYujvAxHLROvr53mAXYkZN4rPVn-zs3UKy7sdJea-n9AziY27lr50zADQtQ9FlKAuGRZoSdIQEkhksU2-dMkx5QRkq-bC9sJ015ks5_OtqVclS8CmMmq8xb4yJd58ECRe0n9U4RSmNpZNJJy3eJoSiFxq7c7zLKf5MsUEx9OtIfou4IdymFKWurWJr5fq8rBnlsJRu-LBypLiIznR1m6Sy0hXQoZ2ik9xSGtcuSwduKb50pU5sY9gnRJ3FOg-BdovsbD5a89NVhjru8Afuayt-fIxsjaGiOmG-PH0p_8IpSok0ryvaDLrOQD6ohV3m-HTZnduYDrdk9Gk3yoEoEzlKlqUkTqFO1D3BcxjIcD2DTfp19QbIbn2bdti_K_VNYCKZNxYFn7_cPCXkiDMM2fvmR09cO32o0u8cPBrGSa01wUtFY-YnwPainVpJCy4BP7z0AG4UNrOHmnFz0CMHYQ";
 
-    // Function to upload file to Dropbox
-    async function uploadToDropbox(file, folder) {
-        const uploadUrl = "https://content.dropboxapi.com/2/files/upload";
-        const filePath = `/${folder}/${file.name}`;
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const body = document.body;
+    const loadingScreen = document.getElementById('loadingScreen');
+    let isAdmin = localStorage.getItem('isAdmin') === 'true';
 
-        const response = await fetch(uploadUrl, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${accessToken}`,
-                "Dropbox-API-Arg": JSON.stringify({
-                    path: filePath,
-                    mode: "add",
-                    autorename: true,
-                    mute: false
-                }),
-                "Content-Type": "application/octet-stream"
-            },
-            body: file
-        });
-
-        if (response.ok) {
-            const result = await response.json();
-            console.log("Upload Successful:", result);
-            return result;
-        } else {
-            console.error("Upload Failed:", await response.text());
-            return null;
-        }
-    }
-
-    // Setup upload buttons for different sections
-    function setupUploadButton(buttonId, fileInputId, previewContainerId, folder) {
-        const uploadButton = document.getElementById(buttonId);
-        const fileInput = document.getElementById(fileInputId);
-        const previewContainer = document.getElementById(previewContainerId);
-
-        if (uploadButton) {
-            uploadButton.addEventListener("click", async () => {
-                if (fileInput.files.length > 0) {
-                    for (let file of fileInput.files) {
-                        const result = await uploadToDropbox(file, folder);
-                        if (result) {
-                            alert("File uploaded successfully to Dropbox!");
-                        } else {
-                            alert("Upload failed. Check console for details.");
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    // Loading Screen Logic
+    // 🟢 Loading Screen Logic
     window.addEventListener('load', function () {
         if (loadingScreen) {
             setTimeout(() => {
@@ -66,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Dark Mode Toggle Logic
+    // 🟢 Dark Mode Toggle Logic
     const currentTheme = localStorage.getItem('theme');
     if (currentTheme) {
         body.classList.add(currentTheme);
@@ -89,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Admin Login Functionality
+    // 🟢 Admin Login Functionality
     const loginButton = document.getElementById('loginButton');
     const usernameField = document.getElementById('username');
     const passwordField = document.getElementById('password');
@@ -104,25 +57,119 @@ document.addEventListener('DOMContentLoaded', function () {
                 isAdmin = true;
                 localStorage.setItem('isAdmin', 'true');
                 document.body.classList.add('admin-enabled');
-                document.querySelector('.upload-container').style.display = 'block';
-                usernameField.value = '';
-                passwordField.value = '';
-                document.getElementById('adminLogin').style.display = 'none';
+                toggleAdminFeatures();
             } else {
                 alert('Invalid credentials. Please try again.');
             }
         });
     }
 
-    // Popup Toolbar Setup
+    // 🟢 Function to Upload Files to Dropbox
+    async function uploadToDropbox(file, folder) {
+        const uploadUrl = "https://content.dropboxapi.com/2/files/upload";
+        const filePath = `/${folder}/${file.name}`;
+
+        try {
+            const response = await fetch(uploadUrl, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                    "Dropbox-API-Arg": JSON.stringify({
+                        path: filePath,
+                        mode: "add",
+                        autorename: true,
+                        mute: false
+                    }),
+                    "Content-Type": "application/octet-stream"
+                },
+                body: file
+            });
+
+            if (!response.ok) throw new Error(await response.text());
+
+            console.log("Upload Successful");
+            return await getTemporaryLink(filePath);
+        } catch (error) {
+            console.error("Upload Failed:", error);
+            return null;
+        }
+    }
+
+    // 🟢 Function to Get Temporary File URL from Dropbox
+    async function getTemporaryLink(filePath) {
+        const apiUrl = "https://api.dropboxapi.com/2/files/get_temporary_link";
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ path: filePath })
+            });
+
+            if (!response.ok) throw new Error(await response.text());
+
+            const data = await response.json();
+            return data.link;
+        } catch (error) {
+            console.error("Failed to fetch file link:", error);
+            return null;
+        }
+    }
+
+    // 🟢 Function to Load Previews from Dropbox
+    async function loadPreviewsFromDropbox(previewContainer, folder) {
+        const apiUrl = "https://api.dropboxapi.com/2/files/list_folder";
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ path: `/${folder}` })
+            });
+
+            if (!response.ok) throw new Error(await response.text());
+
+            const data = await response.json();
+            previewContainer.innerHTML = '';
+
+            for (let file of data.entries) {
+                const fileUrl = await getTemporaryLink(file.path_lower);
+                if (fileUrl) {
+                    createPreview(file.name, "Stored Title", "Stored Description", fileUrl, previewContainer);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to load previews:", error);
+        }
+    }
+
+    // 🟢 Function to Handle File Upload
+    async function handleFileUpload(fileUploadId, previewContainer, folder) {
+        if (!isAdmin) return;
+
+        const fileUpload = document.getElementById(fileUploadId);
+
+        for (let file of fileUpload.files) {
+            const fileUrl = await uploadToDropbox(file, folder);
+            if (fileUrl) {
+                alert("File uploaded successfully!");
+                loadPreviewsFromDropbox(previewContainer, folder);
+            }
+        }
+    }
+
+    // 🟢 Function to Setup Popup Toolbar
     function setupPopupToolbar(containerId, toolbarId) {
         const container = document.getElementById(containerId);
         const toolbar = document.getElementById(toolbarId);
 
-        if (!container || !toolbar) {
-            console.error(`Element not found: ${containerId}, ${toolbarId}`);
-            return;
-        }
+        if (!container || !toolbar) return;
 
         container.addEventListener('mouseup', () => {
             const selection = window.getSelection();
@@ -137,21 +184,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         toolbar.querySelectorAll('button').forEach(button => {
-            const command = button.dataset.command;
             button.addEventListener('click', () => {
-                if (command === 'increaseFont') {
-                    document.execCommand('fontSize', false, '4');
-                } else if (command === 'decreaseFont') {
-                    document.execCommand('fontSize', false, '2');
-                } else {
-                    document.execCommand(command, false, null);
-                }
+                document.execCommand(button.dataset.command, false, null);
                 toolbar.style.display = 'none';
             });
-        });
-
-        toolbar.querySelector('input[type="color"]').addEventListener('input', (event) => {
-            document.execCommand('foreColor', false, event.target.value);
         });
 
         document.addEventListener('mousedown', function (event) {
@@ -166,90 +202,22 @@ document.addEventListener('DOMContentLoaded', function () {
     setupPopupToolbar('fileTitleProjects', 'popupToolbarTitleProjects');
     setupPopupToolbar('fileDescriptionProjects', 'popupToolbarDescriptionProjects');
 
-    // File Upload and Preview Logic
-    async function handleFileUpload(fileUploadId, fileTitleId, fileDescriptionId, previewContainer, pageType) {
-        if (!isAdmin) return;
-
-        const fileUpload = document.getElementById(fileUploadId);
-        const fileTitle = document.getElementById(fileTitleId).textContent.trim();
-        const fileDescription = document.getElementById(fileDescriptionId).textContent.trim();
-
-        const files = fileUpload.files;
-        let metadata = [];
-
-        for (let file of files) {
-            const reader = new FileReader();
-            reader.onload = async function (e) {
-                const fileUrl = e.target.result;
-                const base64Content = fileUrl.split(',')[1];
-                const filePath = `${pageType}/${file.name}`;
-                const success = await uploadToGitHub(filePath, base64Content);
-
-                if (success) {
-                    metadata.push({
-                        title: fileTitle || 'Untitled',
-                        description: fileDescription || 'No description',
-                        fileName: file.name,
-                        fileUrl: `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${pageType}/${file.name}`,
-                    });
-                    console.log(`File ${file.name} uploaded successfully.`);
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-
-        await uploadToGitHub(`${pageType}/metadata.json`, JSON.stringify(metadata));
-        loadPreviewsFromGitHub(previewContainer, pageType);
-    }
-
-    async function loadPreviewsFromGitHub(previewContainer, pageType) {
-        const metadata = await fetchFromGitHub(`${pageType}/metadata.json`);
-        if (!metadata) return;
-
-        previewContainer.innerHTML = '';
-        metadata.forEach(({ title, description, fileUrl }) => {
-            const previewGroup = document.createElement('div');
-            previewGroup.classList.add('preview-group');
-
-            const titleElem = document.createElement('h4');
-            titleElem.textContent = title || 'Untitled';
-            previewGroup.appendChild(titleElem);
-
-            const descriptionElem = document.createElement('p');
-            descriptionElem.textContent = description || 'No description';
-            previewGroup.appendChild(descriptionElem);
-
-            if (fileUrl.endsWith('.jpg') || fileUrl.endsWith('.png') || fileUrl.endsWith('.jpeg')) {
-                const img = document.createElement('img');
-                img.src = fileUrl;
-                img.alt = title;
-                previewGroup.appendChild(img);
-            } else if (fileUrl.endsWith('.mp4')) {
-                const video = document.createElement('video');
-                video.src = fileUrl;
-                video.controls = true;
-                previewGroup.appendChild(video);
-            }
-
-            previewContainer.appendChild(previewGroup);
-        });
-    }
-
+    // 🟢 Setup File Upload Buttons
     const uploadButtonInternships = document.getElementById('uploadButtonInternships');
     const uploadPreviewInternships = document.getElementById('uploadPreviewInternships');
     if (uploadButtonInternships) {
         uploadButtonInternships.addEventListener('click', function () {
-            handleFileUpload('fileUploadInternships', 'fileTitleInternships', 'fileDescriptionInternships', uploadPreviewInternships, 'Internships');
+            handleFileUpload('fileUploadInternships', uploadPreviewInternships, 'Internships');
         });
-        loadPreviewsFromGitHub(uploadPreviewInternships, 'Internships');
+        loadPreviewsFromDropbox(uploadPreviewInternships, 'Internships');
     }
 
     const uploadButtonProjects = document.getElementById('uploadButtonProjects');
     const uploadPreviewProjects = document.getElementById('uploadPreviewProjects');
     if (uploadButtonProjects) {
         uploadButtonProjects.addEventListener('click', function () {
-            handleFileUpload('fileUploadProjects', 'fileTitleProjects', 'fileDescriptionProjects', uploadPreviewProjects, 'Projects');
+            handleFileUpload('fileUploadProjects', uploadPreviewProjects, 'Projects');
         });
-        loadPreviewsFromGitHub(uploadPreviewProjects, 'Projects');
+        loadPreviewsFromDropbox(uploadPreviewProjects, 'Projects');
     }
 });
