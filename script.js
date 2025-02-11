@@ -12,12 +12,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 loadingScreen.style.opacity = '0';
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
-                }, 1000);
-            }, 1000);
+                }, 999);
+            }, 999);
         }
     });
 
-    // Dark Mode Toggle Logic
+// Dark Mode Toggle Logic
     const currentTheme = localStorage.getItem('theme');
     if (currentTheme) {
         body.classList.add(currentTheme);
@@ -124,26 +124,57 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Function to Create Delete Button
-    function createDeleteButton(previewGroup, filePath) {
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'X';
-        deleteButton.classList.add('delete-button');
-        deleteButton.style.display = isAdmin ? 'block' : 'none';
+    // Function to Upload Text File to Dropbox
+    async function uploadTextFileToDropbox(title, description, pageType) {
+        if (!isAdmin) return;
 
-        deleteButton.addEventListener('click', function () {
-            if (!isAdmin) {
-                alert('You are not authorized to delete items.');
-                return;
+        const fileName = `${title.replace(/\s+/g, '_')}.txt`;
+        const fileContent = `Title: ${title}\nDescription: ${description}`;
+        const fileBlob = new Blob([fileContent], { type: "text/plain" });
+
+        try {
+            const response = await fetch("https://content.dropboxapi.com/2/files/upload", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${DROPBOX_ACCESS_TOKEN}`,
+                    "Dropbox-API-Arg": JSON.stringify({
+                        path: `/AshleyPortfolioUploader/${fileName}`,
+                        mode: 'add',
+                        autorename: true,
+                        mute: false
+                    }),
+                    "Content-Type": "application/octet-stream"
+                },
+                body: fileBlob
+            });
+
+            if (!response.ok) {
+                throw new Error(`Dropbox Upload Failed: ${response.statusText}`);
             }
-            deleteFromDropbox(filePath);
-            previewGroup.remove();
-        });
 
-        return deleteButton;
+            const data = await response.json();
+            console.log("Uploaded Text File:", data.path_display);
+            return data.path_display;
+        } catch (error) {
+            console.error("Dropbox upload error:", error);
+            return null;
+        }
     }
 
-    // Popup Toolbar Setup
+    // Test Dropbox Upload Button
+    document.getElementById('testDropboxUpload').addEventListener('click', async () => {
+        const testTitle = "Test File";
+        const testDescription = "This is a test description.";
+        const testFilePath = await uploadTextFileToDropbox(testTitle, testDescription, "Test");
+
+        if (testFilePath) {
+            alert(`Test file uploaded: ${testFilePath}`);
+        } else {
+            alert("Test upload failed.");
+        }
+    });
+
+    // Enhanced Popup Toolbar Setup
     function setupPopupToolbar(containerId, toolbarId) {
         const container = document.getElementById(containerId);
         const toolbar = document.getElementById(toolbarId);
@@ -162,9 +193,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         toolbar.querySelectorAll('button').forEach(button => {
             button.addEventListener('click', () => {
-                document.execCommand(button.title.toLowerCase(), false, null);
+                document.execCommand(button.getAttribute('data-command'), false, null);
                 toolbar.style.display = 'none';
             });
+        });
+
+        toolbar.querySelector('input[type="color"]').addEventListener('input', (event) => {
+            document.execCommand('foreColor', false, event.target.value);
         });
 
         document.addEventListener('mousedown', function (event) {
