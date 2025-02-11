@@ -1,137 +1,57 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Test Script to Debug File Upload
-    const testUploadButton = document.createElement('button');
-    testUploadButton.textContent = 'Test Upload';
-    testUploadButton.style = 'position: fixed; top: 20px; left: 20px; z-index: 1000;';
-    document.body.appendChild(testUploadButton);
+    // Dropbox API Token
+    const accessToken = "sl.u.AFjENuMs1ivgJYZbFX2u4s2nPXaC_wCV7z9abGWEuCpV_F_oEweYgHkDrRkbn2n7kQFeoRCvTuFXMXd96LrmwiFWZQPSKUccS9C2zjcrmJom76chDg1nhcG-0lpTVEqQCksGL85JA8hav6habf8FHuKnID0hof-irPjtFnwKflhDso4vZFcpG6aQ7_R0bb0FbesaQYNW692yL2C1X-hQbeKubGKPM_zUzQHkd1JytNzLLg31BZXJx3L73d88_G6cAcClDHZchpkfew8HCNN4PHCSSDu8ub6WanLQJ8oHesTlSd_CexTCt79JhG5QkFRF6rfigf73eQMwAxU9QcIMcRTzN9Nupt-h4rrwppRyu-sEF853YgGcqzV-YYg5UWYkBvzwgESui7WPCqeehNkcl-R7fcstBUrcGEKQ4zPleU_tk8nHIX95IZYQTbIA2aqOEGFgtZ45ZK0qO3soGhgo00uPyMItSbsSgPCcvzWzLWSgrGtkard-VeSBT59zXg9i2wn8hvG1rFqv69Y_4gd6JpQ2PnfTsgnM20w_58BMMC0oZX7deCtq3_m5ilHEpDS0k71vP1qpMzMRJ62uuXFmekgOnA66oi2qYqlVYDCHdEo-dfR4Ku6QeEg05uCuwKI1DjaPqBhHQ_v9nKJ2O1UC-7NFASaK2y7fSLHgsMn07-ukaggP-6LwI9l-GsFKQ4w2g04iDOGoIM2Y_JVCCvOVrrzbhJ9mARPTodY6rpdi1iAjBoXHZCt0p9iOeeG9OTdkf-dLVJDM_JcWY77ZSdaiD3Komh6ocX0hxBIn5g9d-WtjYn94bgiqKR5QHC_G1f6AT6LW9rPo7lx9izBr---nB8PNRDzPJzH_-olylbNcEonDW-JJt4693FfCw9PeaL2mXqmCcQOJcK7BKqAgejQpJWfjup-WiSmC6Kwj372bc_-hXwQagFkaq3YFpIbqYjYaxgMX5i_lN41NyZvfrAeGfyFrNxDXPuhUewXM4V64gyxvHFViYujvAxHLROvr53mAXYkZN4rPVn-zs3UKy7sdJea-n9AziY27lr50zADQtQ9FlKAuGRZoSdIQEkhksU2-dMkx5QRkq-bC9sJ015ks5_OtqVclS8CmMmq8xb4yJd58ECRe0n9U4RSmNpZNJJy3eJoSiFxq7c7zLKf5MsUEx9OtIfou4IdymFKWurWJr5fq8rBnlsJRu-LBypLiIznR1m6Sy0hXQoZ2ik9xSGtcuSwduKb50pU5sY9gnRJ3FOg-BdovsbD5a89NVhjru8Afuayt-fIxsjaGiOmG-PH0p_8IpSok0ryvaDLrOQD6ohV3m-HTZnduYDrdk9Gk3yoEoEzlKlqUkTqFO1D3BcxjIcD2DTfp19QbIbn2bdti_K_VNYCKZNxYFn7_cPCXkiDMM2fvmR09cO32o0u8cPBrGSa01wUtFY-YnwPainVpJCy4BP7z0AG4UNrOHmnFz0CMHYQ";
 
-    testUploadButton.addEventListener('click', async function () {
-        try {
-            const testFileName = 'testFile.txt';
-            const testFileContent = 'This is a test file content';
-            const repoOwner = 'Ash-Almonte-it23';
-            const repoName = 'Ashley-F-Almonte-Portfolio';
-            const baseApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
-            const url = `${baseApiUrl}/${testFileName}`;
+    // Function to upload file to Dropbox
+    async function uploadToDropbox(file, folder) {
+        const uploadUrl = "https://content.dropboxapi.com/2/files/upload";
+        const filePath = `/${folder}/${file.name}`;
 
-            console.log('Starting test upload...');
-            console.log('Upload URL:', url);
-
-            let sha = null;
-
-            // Fetch SHA if file exists
-            const checkResponse = await fetch(url, {
-                headers: {
-                    Authorization: `Bearer ${TOKEN_PORTFOLIO_WEB}`, // Use injected secret from environment variable
-                },
-            });
-
-            if (checkResponse.ok) {
-                const fileData = await checkResponse.json();
-                sha = fileData.sha;
-                console.log('SHA of existing file:', sha);
-            } else {
-                console.warn('No existing file. Proceeding with a new upload.');
-            }
-
-            // Upload or update file
-            const response = await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    Authorization: `Bearer ${TOKEN_PORTFOLIO_WEB}`, // Use injected secret from environment variable
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    message: `Test upload for ${testFileName}`,
-                    content: btoa(testFileContent),
-                    sha: sha,
+        const response = await fetch(uploadUrl, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${accessToken}`,
+                "Dropbox-API-Arg": JSON.stringify({
+                    path: filePath,
+                    mode: "add",
+                    autorename: true,
+                    mute: false
                 }),
-            });
-
-            if (!response.ok) {
-                console.error('Test upload failed:', await response.json());
-                alert('Test upload failed. Check the console for details.');
-            } else {
-                console.log('Test upload successful:', await response.json());
-                alert('Test upload successful!');
-            }
-        } catch (error) {
-            console.error('Error during test upload:', error);
-            alert('An error occurred. Check the console for details.');
-        }
-    });
-
-    // Rest of the code
-    const darkModeToggle = document.getElementById('dark-mode-toggle');
-    const body = document.body;
-    const loadingScreen = document.getElementById('loadingScreen');
-    let isAdmin = localStorage.getItem('isAdmin') === 'true';
-
-    const repoOwner = 'Ash-Almonte-it23';
-    const repoName = 'Ashley-F-Almonte-Portfolio';
-    const baseApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents`;
-
-    async function uploadToGitHub(filePath, content) {
-        const url = `${baseApiUrl}/${filePath}`;
-        console.log('Uploading to:', url);
-
-        let sha = null;
-
-        // Fetch SHA if file exists
-        const checkResponse = await fetch(url, {
-            headers: {
-                Authorization: `Bearer ${TOKEN_PORTFOLIO_WEB}`, // Use injected secret from environment variable
+                "Content-Type": "application/octet-stream"
             },
+            body: file
         });
 
-        if (checkResponse.ok) {
-            const fileData = await checkResponse.json();
-            sha = fileData.sha;
-            console.log('SHA of existing file:', sha);
+        if (response.ok) {
+            const result = await response.json();
+            console.log("Upload Successful:", result);
+            return result;
         } else {
-            console.warn('No existing SHA found.');
-        }
-
-        // Upload or update file
-        const response = await fetch(url, {
-            method: 'PUT',
-            headers: {
-                Authorization: `Bearer ${TOKEN_PORTFOLIO_WEB}`, // Use injected secret from environment variable
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                message: `Add or update ${filePath}`,
-                content: btoa(content),
-                sha: sha,
-            }),
-        });
-
-        if (!response.ok) {
-            console.error('GitHub upload error:', await response.json());
-            return false;
-        }
-        console.log('File uploaded successfully.');
-        return true;
-    }
-
-    async function fetchFromGitHub(filePath) {
-        const url = `${baseApiUrl}/${filePath}`;
-        console.log('Fetching file from:', url);
-
-        const response = await fetch(url, {
-            headers: {
-                Authorization: `Bearer ${TOKEN_PORTFOLIO_WEB}`, // Use injected secret from environment variable
-            },
-        });
-
-        if (!response.ok) {
-            console.error('GitHub fetch error:', await response.text());
+            console.error("Upload Failed:", await response.text());
             return null;
         }
+    }
 
-        const data = await response.json();
-        console.log('File fetched successfully:', data);
-        return JSON.parse(atob(data.content));
+    // Setup upload buttons for different sections
+    function setupUploadButton(buttonId, fileInputId, previewContainerId, folder) {
+        const uploadButton = document.getElementById(buttonId);
+        const fileInput = document.getElementById(fileInputId);
+        const previewContainer = document.getElementById(previewContainerId);
+
+        if (uploadButton) {
+            uploadButton.addEventListener("click", async () => {
+                if (fileInput.files.length > 0) {
+                    for (let file of fileInput.files) {
+                        const result = await uploadToDropbox(file, folder);
+                        if (result) {
+                            alert("File uploaded successfully to Dropbox!");
+                        } else {
+                            alert("Upload failed. Check console for details.");
+                        }
+                    }
+                }
+            });
+        }
     }
 
     // Loading Screen Logic
