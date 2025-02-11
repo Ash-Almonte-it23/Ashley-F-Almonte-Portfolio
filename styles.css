@@ -92,6 +92,38 @@ button:hover {
     margin: 5px 0;
 }
 
+/* Internship & Project Entries */
+.internship-entry, .project-entry {
+    border-bottom: 1px solid #ccc;
+    padding: 15px 0;
+}
+
+.internship-entry h3, .project-entry h3 {
+    color: #007BFF;
+}
+
+.internship-entry p, .project-entry p {
+    margin: 5px 0;
+}
+
+/* Images */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 10px 0;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Videos */
+video {
+    max-width: 100%;
+    display: block;
+    margin: 10px 0;
+    border-radius: 10px;
+}
+
 /* Centering the profile image */
 .profile-image {
     border-radius: 50%;
@@ -100,142 +132,6 @@ button:hover {
     object-fit: cover;
     margin: 20px auto;
     display: block;
-}
-
-/* Upload Container Styles */
-.upload-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin: 20px;
-    color: #000;
-}
-
-#fileUpload, [contenteditable], #fileDescription {
-    margin: 10px auto;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    width: 100%;
-    max-width: 400px;
-    color: #000;
-    display: block;
-    text-align: left;
-}
-
-/* Editable Divs with Placeholder */
-.editable-div:empty:before {
-    content: attr(placeholder);
-    color: gray;
-    pointer-events: none;
-    display: block;
-}
-
-/* Fixing the Upload Button in Light Mode */
-.light-mode #uploadButton {
-    background-color: #007BFF;
-    color: #fff;
-}
-
-.light-mode #uploadButton:hover {
-    background-color: #0056b3;
-}
-
-#uploadButton {
-    padding: 0.6em 2em;
-    cursor: pointer;
-    background-color: #111;
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    transition: background-color 0.3s;
-    width: 100%;
-    max-width: 400px;
-    position: relative;
-    z-index: 0;
-    margin: 20px;
-    user-select: none;
-}
-
-#uploadButton:before {
-    content: "";
-    background: linear-gradient(
-        45deg,
-        #ff0000,
-        #ff7300,
-        #fffb00,
-        #48ff00,
-        #00ffd5,
-        #002bff,
-        #7a00ff,
-        #ff00c8,
-        #ff0000
-    );
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    background-size: 400%;
-    z-index: -1;
-    filter: blur(5px);
-    width: calc(100% + 4px);
-    height: calc(100% + 4px);
-    animation: glowing-button-85 20s linear infinite;
-    transition: opacity 0.3s ease-in-out;
-    border-radius: 10px;
-}
-
-#uploadButton:hover {
-    background-color: #0056b3;
-}
-
-@keyframes glowing-button-85 {
-    0% {
-        background-position: 0 0;
-    }
-    50% {
-        background-position: 400% 0;
-    }
-    100% {
-        background-position: 0 0;
-    }
-}
-
-/* Popup Toolbar Styles */
-.popup-toolbar {
-    display: none; /* Initially hidden */
-    position: absolute; /* Allows dynamic positioning */
-    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black */
-    border: 1px solid #ccc; /* Light border for visibility */
-    border-radius: 5px; /* Rounded corners */
-    padding: 5px; /* Space inside the toolbar */
-    z-index: 1000; /* Ensure it appears above other elements */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Slight shadow for depth */
-    color: #fff; /* Text color */
-    max-width: 90%; /* Prevents the toolbar from being too wide */
-    overflow-wrap: break-word; /* Ensures text doesn't overflow */
-    transform: none; /* Removes centering transform to avoid layout issues */
-}
-
-/* Button and Input Styles */
-.popup-toolbar button,
-.popup-toolbar input[type="color"] {
-    margin-right: 5px; /* Spacing between toolbar elements */
-    background-color: #555; /* Default button background */
-    color: #fff; /* Button text color */
-    border: none; /* Removes default browser button borders */
-    border-radius: 3px; /* Subtle rounding for buttons */
-    padding: 5px 10px; /* Button size */
-    cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.2s ease; /* Smooth hover effect */
-}
-
-/* Hover Effect for Buttons */
-.popup-toolbar button:hover {
-    background-color: #666; /* Slightly lighter background on hover */
 }
 
 /* Mobile Responsiveness */
@@ -249,73 +145,6 @@ button:hover {
     .popup-toolbar button {
         padding: 4px 8px; /* Smaller buttons */
     }
-}
-
-/* Upload Preview Styles */
-.upload-preview {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    margin-top: 20px;
-    width: 100%;
-}
-
-.preview-group {
-    position: relative;
-    overflow: hidden;
-    max-width: 100%;
-    width: 100%;
-    height: auto;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    padding: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.preview-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-.preview-header h4 {
-    margin: 10px 0 5px 0;
-    text-align: left;
-    font-weight: bold;
-    word-wrap: break-word;
-}
-
-.preview-item p {
-    margin: 5px 0;
-    text-align: left;
-    font-style: italic;
-    word-wrap: break-word;
-}
-
-.preview-header button {
-    background-color: #ff0000;
-    color: #fff;
-    border: none;
-    padding: 3px 8px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 12px;
-}
-
-.preview-header button:hover {
-    background-color: #cc0000;
-}
-
-.preview-item img, 
-.preview-item video {
-    width: 100%;
-    max-height: 400px;
-    object-fit: contain;
-    margin: 0 auto;
-    display: block;
-    border-radius: 10px;
 }
 
 /* Dark Mode Styles */
@@ -344,46 +173,6 @@ button:hover {
     color: #ffffff;
 }
 
-.dark-mode .upload-container,
-.dark-mode .preview-group,
-.dark-mode .preview-header,
-.dark-mode .preview-item {
-    background-color: #222;
-    color: #fff;
-}
-
-.dark-mode #fileUpload, .dark-mode [contenteditable], .dark-mode #fileDescription {
-    background-color: #333;
-    color: #fff;
-    border: 1px solid #555;
-}
-
-.dark-mode #uploadButton {
-    background-color: #444;
-    color: #fff;
-}
-
-.dark-mode #uploadButton:hover {
-    background-color: #666;
-}
-
-.dark-mode .popup-toolbar {
-    background-color: #444;
-    border-color: #666;
-}
-
-.dark-mode .popup-toolbar button {
-    background-color: #555;
-    color: #fff;
-}
-
-.dark-mode .popup-toolbar button:hover {
-    background-color: #666;
-}
-
-.dark-mode .preview-header button {
-    background-color: #cc0000;
-}
 
 /* URL Links in Dark Mode for better contrast */
 .dark-mode a {
@@ -503,30 +292,6 @@ button:hover {
         display: block;
     }
     
-    /* Upload Container Styles */
-    .upload-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin: 20px;
-        color: #000;
-    }
-    
-    #fileUpload, [contenteditable], #fileDescription {
-        margin: 10px auto;
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        width: 100%;
-        max-width: 400px;
-        color: #000;
-        display: block;
-        text-align: left;
-    }
     
     /* Editable Divs with Placeholder */
     .editable-div:empty:before {
@@ -534,167 +299,6 @@ button:hover {
         color: gray;
         pointer-events: none;
         display: block;
-    }
-    
-    /* Fixing the Upload Button in Light Mode */
-    .light-mode #uploadButton {
-        background-color: #007BFF;
-        color: #fff;
-    }
-    
-    .light-mode #uploadButton:hover {
-        background-color: #0056b3;
-    }
-    
-    #uploadButton {
-        padding: 0.6em 2em;
-        cursor: pointer;
-        background-color: #111;
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        transition: background-color 0.3s;
-        width: 100%;
-        max-width: 400px;
-        position: relative;
-        z-index: 0;
-        margin: 20px;
-        user-select: none;
-    }
-    
-    #uploadButton:before {
-        content: "";
-        background: linear-gradient(
-            45deg,
-            #ff0000,
-            #ff7300,
-            #fffb00,
-            #48ff00,
-            #00ffd5,
-            #002bff,
-            #7a00ff,
-            #ff00c8,
-            #ff0000
-        );
-        position: absolute;
-        top: -2px;
-        left: -2px;
-        background-size: 400%;
-        z-index: -1;
-        filter: blur(5px);
-        width: calc(100% + 4px);
-        height: calc(100% + 4px);
-        animation: glowing-button-85 20s linear infinite;
-        transition: opacity 0.3s ease-in-out;
-        border-radius: 10px;
-    }
-    
-    #uploadButton:hover {
-        background-color: #0056b3;
-    }
-    
-    @keyframes glowing-button-85 {
-        0% {
-            background-position: 0 0;
-        }
-        50% {
-            background-position: 400% 0;
-        }
-        100% {
-            background-position: 0 0;
-        }
-    }
-    
-    /* Popup toolbar */
-    .popup-toolbar {
-        display: none;
-        position: absolute;
-        background-color: rgba(0, 0, 0, 0.8);
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 5px;
-        z-index: 1000;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        color: #fff;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-    
-    .popup-toolbar button, .popup-toolbar input[type="color"] {
-        margin-right: 5px;
-        background-color: #555;
-        color: #fff;
-    }
-    
-    .popup-toolbar button:hover {
-        background-color: #666;
-    }
-    
-    /* Upload Preview Styles */
-    .upload-preview {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        justify-content: center;
-        margin-top: 20px;
-        width: 100%;
-    }
-    
-    .preview-group {
-        position: relative;
-        overflow: hidden;
-        max-width: 100%;
-        width: 100%;
-        height: auto;
-        margin-bottom: 20px;
-        border-radius: 10px;
-        padding: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    .preview-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-    }
-    
-    .preview-header h4 {
-        margin: 10px 0 5px 0;
-        text-align: left;
-        font-weight: bold;
-        word-wrap: break-word;
-    }
-    
-    .preview-item p {
-        margin: 5px 0;
-        text-align: left;
-        font-style: italic;
-        word-wrap: break-word;
-    }
-    
-    .preview-header button {
-        background-color: #ff0000;
-        color: #fff;
-        border: none;
-        padding: 3px 8px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 12px;
-    }
-    
-    .preview-header button:hover {
-        background-color: #cc0000;
-    }
-    
-    .preview-item img, 
-    .preview-item video {
-        width: 100%;
-        max-height: 400px;
-        object-fit: contain;
-        margin: 0 auto;
-        display: block;
-        border-radius: 10px;
     }
     
     /* Dark Mode Styles */
@@ -721,47 +325,6 @@ button:hover {
     .dark-mode .info-section2 {
         background: rgba(34, 34, 34, 0.9);
         color: #ffffff;
-    }
-    
-    .dark-mode .upload-container,
-    .dark-mode .preview-group,
-    .dark-mode .preview-header,
-    .dark-mode .preview-item {
-        background-color: #222;
-        color: #fff;
-    }
-    
-    .dark-mode #fileUpload, .dark-mode [contenteditable], .dark-mode #fileDescription {
-        background-color: #333;
-        color: #fff;
-        border: 1px solid #555;
-    }
-    
-    .dark-mode #uploadButton {
-        background-color: #444;
-        color: #fff;
-    }
-    
-    .dark-mode #uploadButton:hover {
-        background-color: #666;
-    }
-    
-    .dark-mode .popup-toolbar {
-        background-color: #444;
-        border-color: #666;
-    }
-    
-    .dark-mode .popup-toolbar button {
-        background-color: #555;
-        color: #fff;
-    }
-    
-    .dark-mode .popup-toolbar button:hover {
-        background-color: #666;
-    }
-    
-    .dark-mode .preview-header button {
-        background-color: #cc0000;
     }
     
     /* URL Links in Dark Mode for better contrast */
@@ -930,120 +493,7 @@ button:hover {
     .light-mode .button-85:after {
         background: #ddd;
     }
-    
-    /* Fixes and Updates */
-    .upload-preview {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        justify-content: center;
-    }
-    
-    .preview-item button {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background-color: #ff0000;
-        border: none;
-        color: #fff;
-        padding: 5px 10px;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-    
-    .preview-item h4,
-    .preview-item p {
-        margin: 5px 0;
-        text-align: left;
-        word-wrap: break-word;
-    }
-    
-    .preview-item img {
-        max-width: 100%;
-        border-radius: 10px;
-    }
-    
-   /* Admin Login Styles */
-#adminLogin {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2px; /* Reduced padding */
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 5px; /* Smaller border radius */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 30px; /* Reduced width */
-    position: absolute;
-    left: 85%;
-    transform: translateX(-50%);
-    margin-top: 15px; /* Reduced top margin */
-}
 
-#adminLogin input {
-    margin: 1px 0; /* Smaller margin */
-    padding: 1px; /* Reduced padding */
-    border-radius: 2px; /* Smaller border radius */
-    border: 1px solid #ccc;
-    width: 10px; /* Smaller width */
-    font-size: 3px; /* Tiny font size */
-}
-
-#loginButton {
-    padding: 1px 2px; /* Smaller padding */
-    margin: 1px 0; /* Reduced margin */
-    cursor: pointer;
-    background-color: #007BFF;
-    color: #fff;
-    border: none;
-    border-radius: 2px; /* Smaller border radius */
-    transition: background-color 0.3s;
-    width: 7.5px; /* Smaller width */
-    font-size: 2px; /* Very tiny font size */
-}
-
-#loginButton:hover {
-    background-color: #0056b3;
-}
-
-.dark-mode #adminLogin {
-    background: rgba(34, 34, 34, 0.9);
-}
-
-.dark-mode #adminLogin input {
-    background-color: #333;
-    color: #fff;
-    border: 1px solid #555;
-}
-
-.dark-mode #loginButton {
-    background-color: #444;
-}
-
-.dark-mode #loginButton:hover {
-    background-color: #666;
-}
-
-/* Further adjustments for smaller devices */
-@media (max-width: 768px) {
-    #adminLogin {
-        transform: scale(0.05); /* Scale down to 5% of the original size */
-        transform-origin: top left;
-        left: 75%; /* Adjusted position */
-        padding: 0;
-        margin: 0;
-    }
-
-    #adminLogin input, #loginButton {
-        padding: 0; /* Further reducing padding */
-        font-size: 3px; /* Extremely small font size */
-        border-radius: 1px; /* Tiny border radius */
-    }
-
-    #loginButton {
-        width: 8px; /* Very tiny width */
-    }
-}
-    
 /* Loading screen styles */
 #loadingScreen {
     position: fixed; /* Fixed position to center */
@@ -1442,130 +892,6 @@ body.light-mode {
 
 .light-mode .button-85:after {
     background: #ddd;
-}
-
-/* Fixes and Updates */
-.upload-preview {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-}
-
-.preview-item button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: #ff0000;
-    border: none;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.preview-item h4,
-.preview-item p {
-    margin: 5px 0;
-    text-align: left;
-    word-wrap: break-word;
-}
-
-.preview-item img {
-    max-width: 100%;
-    border-radius: 10px;
-}
-
-/* Default state for delete buttons */
-.delete-button {
-    display: none; /* Hidden by default */
-    background-color: #ff4444;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    padding: 5px 10px;
-    cursor: pointer;
-    opacity: 0.5; /* Dimmed for visual clarity */
-    pointer-events: none; /* Prevent clicking by default */
-}
-
-/* Make delete buttons functional when admin is logged in */
-body.admin-enabled .delete-button {
-    display: block; /* Show for admins */
-    opacity: 1; /* Fully opaque for admins */
-    pointer-events: auto; /* Allow clicking for admins */
-    cursor: pointer;
-}
-
-/* Delete button hover effects */
-.delete-button:hover {
-    background-color: #ff0000;
-}
-
-/* Disabled state */
-.delete-button.disabled {
-    cursor: not-allowed;
-    background-color: #cccccc;
-    pointer-events: none; /* Prevent clicks */
-}
-
-/* Admin Login Styles */
-#adminLogin {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 8px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 110px;
-    position: absolute;
-    left: 85%;
-    transform: translateX(-50%);
-    margin-top: 30px;
-}
-
-#adminLogin input {
-    margin: 3px 0;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    width: 90%;
-    max-width: 145px;
-}
-
-#loginButton {
-    padding: 5px 10px;
-    margin: 5px 0;
-    cursor: pointer;
-    background-color: #007BFF;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-    width: 80px;
-}
-
-#loginButton:hover {
-    background-color: #0056b3;
-}
-
-.dark-mode #adminLogin {
-    background: rgba(34, 34, 34, 0.9);
-}
-
-.dark-mode #adminLogin input {
-    background-color: #333;
-    color: #fff;
-    border: 1px solid #555;
-}
-
-.dark-mode #loginButton {
-    background-color: #444;
-}
-
-.dark-mode #loginButton:hover {
-    background-color: #666;
 }
 
 /* Loading screen styles */
