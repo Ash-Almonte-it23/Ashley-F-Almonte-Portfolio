@@ -92,36 +92,46 @@ button:hover {
     margin: 5px 0;
 }
 
-/* Internship & Project Entries */
-.internship-entry, .project-entry {
-    border-bottom: 1px solid #ccc;
-    padding: 15px 0;
+/* Main container for entries */
+.entry-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
 }
 
-.internship-entry h3, .project-entry h3 {
-    color: #007BFF;
+/* Individual entry boxes */
+.entry-box {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 800px;
+    width: 100%;
 }
 
-.internship-entry p, .project-entry p {
-    margin: 5px 0;
+/* Entry media (images & videos) */
+.entry-media {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* Images */
-img {
+.entry-media img, .entry-media video {
     max-width: 100%;
     height: auto;
-    display: block;
-    margin: 10px 0;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Videos */
-video {
-    max-width: 100%;
-    display: block;
-    margin: 10px 0;
-    border-radius: 10px;
+/* Responsive styles */
+@media (max-width: 768px) {
+    .entry-box {
+        width: 90%;
+    }
 }
 
 /* Centering the profile image */
