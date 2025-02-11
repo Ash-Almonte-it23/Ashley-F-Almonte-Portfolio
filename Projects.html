@@ -20,23 +20,6 @@
                     <span class="slider"></span>
                 </label>
             </div>
-            <!-- Admin Login Form -->
-            <div id="adminLogin" class="block-cube">
-                <form autocomplete="off">
-                    <div class="control block-cube block-input">
-                        <input type="text" id="username" placeholder="Username">
-                    </div>
-                    <div class="control block-cube block-input">
-                        <input type="password" id="password" placeholder="Password">
-                    </div>
-                    <button type="button" id="loginButton" class="btn block-cube block-cube-hover">
-                        <div class="bg-top"><div class="bg-inner"></div></div>
-                        <div class="bg-right"><div class="bg-inner"></div></div>
-                        <div class="bg"><div class="bg-inner"></div></div>
-                        <div class="text">Log In</div>
-                    </button>
-                </form>
-            </div>
         </div>
 
         <div class="navigation">
@@ -49,33 +32,30 @@
             <h2>Project Title</h2>
             <p>Description of the project...</p>
         </div>
+<div class="project-container">
+            <!-- Project 1 -->
+            <div class="entry-box">
+                <h3>Personal Portfolio Webpage</h3>
+                <p><strong>Tools Used:</strong> HTML, CSS, JavaScript</p>
+                <p>Developed a fully responsive portfolio website with dark/light mode and Firebase-based file upload storage.</p>
+                <div class="entry-media">
+                    <img src="images/portfolio-project.jpg" alt="Portfolio Project Screenshot">
+                </div>
+            </div>
 
-        <div class="upload-container" style="display:none;">
-            <h2>Upload Files</h2>
-            <input type="file" id="fileUploadProjects" multiple>
-            <div contenteditable="true" id="fileTitleProjects" class="editable-div" placeholder="Enter file title">Enter file title</div>
-            <div class="popup-toolbar" id="popupToolbarTitleProjects">
-                <button type="button" title="Bold"><b>B</b></button>
-                <button type="button" title="Italic"><i>I</i></button>
-                <button type="button" title="Underline"><u>U</u></button>
-                <button type="button" title="Increase Font Size">A+</button>
-                <button type="button" title="Decrease Font Size">A-</button>
-                <input type="color" title="Font Color">
+            <!-- Project 2 -->
+            <div class="entry-box">
+                <h3>Machine Learning Model for Drug Discovery</h3>
+                <p><strong>Tools Used:</strong> Python, Pandas, Atom Modeling Pipeline</p>
+                <p>Trained predictive models for heart toxicity analysis, experimenting with various data featurization techniques.</p>
+                <div class="entry-media">
+                    <video controls>
+                        <source src="videos/ml-model-demo.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
             </div>
-            <div contenteditable="true" id="fileDescriptionProjects" class="editable-div" placeholder="Enter file description">Enter file description</div>
-            <div class="popup-toolbar" id="popupToolbarDescriptionProjects">
-                <button type="button" title="Bold"><b>B</b></button>
-                <button type="button" title="Italic"><i>I</i></button>
-                <button type="button" title="Underline"><u>U</u></button>
-                <button type="button" title="Increase Font Size">A+</button>
-                <button type="button" title="Decrease Font Size">A-</button>
-                <input type="color" title="Font Color">
-            </div>
-            <button id="uploadButtonProjects" class="button-85">Upload</button>
         </div>
-
-        <div id="uploadPreviewProjects" class="upload-preview"></div>
-    </div>
     <script src="script.js" defer></script>
 </body>
 </html>
