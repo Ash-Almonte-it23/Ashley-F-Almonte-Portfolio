@@ -92,23 +92,26 @@ button:hover {
     margin: 5px 0;
 }
 
-/* Entry media for images & videos */
+/* Entry Media for Images & Videos */
 .entry-media {
-    margin-top: 15px;
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
 }
 
-.entry-media img, 
+.entry-media img,
 .entry-media video {
-    max-width: 100%;
-    height: auto;
+    width: 100%;
+    max-width: 400px; /* Ensure all images/videos are the same size */
+    height: 225px; /* Maintain consistent aspect ratio */
+    object-fit: cover; /* Prevent distortion */
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Dark mode styles */
+/* Dark Mode Styles */
 .dark-mode {
     background: linear-gradient(to right, #2c3e50, #4ca1af);
     color: #ffffff;
@@ -118,30 +121,23 @@ button:hover {
     background: rgba(34, 34, 34, 0.9);
 }
 
-.dark-mode button {
-    background-color: #333;
-    color: #fff;
-}
-
-.dark-mode button:hover {
-    background-color: #555;
-}
-
 .dark-mode .info-section {
     background: rgba(34, 34, 34, 0.9);
     color: #ffffff;
 }
 
-/* Dark mode images */
+/* Dark Mode Images & Videos */
 .dark-mode .entry-media img,
 .dark-mode .entry-media video {
     box-shadow: 0 2px 6px rgba(255, 255, 255, 0.2);
 }
 
-/* Responsive styles */
+/* Responsive Styles */
 @media (max-width: 768px) {
-    .entry-box {
-        width: 90%;
+    .entry-media img,
+    .entry-media video {
+        max-width: 100%;
+        height: auto;
     }
 }
 
