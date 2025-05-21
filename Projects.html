@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+
     <link rel="stylesheet" href="styles.css">
     <title>Projects</title>
 
@@ -35,6 +37,7 @@
                 </label>
             </div>
         </div>
+        <div id="google_translate_element"></div>
 
         <div class="navigation">
             <button class="button-85" onclick="window.location.href='index.html'">Home</button>
@@ -52,7 +55,7 @@
             <p><strong>Tools Used:</strong> HTML, CSS, JavaScript</p>
             <p><strong>Duration:</strong> August 2024 – February 2025</p>  
             <p>I developed a personal portfolio webpage that highlights my projects, internships, and technical expertise. This project was a central component of my senior portfolio, crafted with HTML, CSS, and JavaScript to build an engaging, interactive site. Key features included dark/light mode functionality, an admin login system that restricted file upload and deletion to only me, file upload previews with titles and descriptions, and a custom loading animation to provide smooth page transitions.</p>
-            <p>I also incorporated a 404 "Not Found" page to handle navigation errors gracefully, preserving the site's visual theme. While the initial version of this project included Firebase for file storage, I was unable to find an API that allowed me to store files in a way that suited my needs. As a result, the finalized and published version of the webpage functioned entirely on local storage. This meant that while all features, including file uploads and admin access, worked seamlessly, the uploaded content was only visible to me. Despite this limitation, the project successfully demonstrated my ability to build an interactive and visually engaging portfolio.</p>
+            <p>I also incorporated a 404 "Not Found" page to handle navigation errors gracefully, preserving the site's visual theme. While the initial version of this project included Firebase for file storage, I was unable to find an API that allowed me to store files in a way that suited my needs. As a result, the finalized and published version of the webpage functioned entirely on local storage. This meant that while all features, including file uploads and admin access, worked seamlessly, the uploaded content was only visible to me. Despite this limitation, the project successfully demonstrated my ability to build an interactive and visually engaging portfolio. I also added Translations to other languages using Google.</p>
             <div class="entry-media">
                 <video controls>
                     <source src="Webpage _1_1.mp4" type="video/mp4">
@@ -75,6 +78,15 @@
             </div>
         </div>
     </div>
+    <script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL
+        }, 'google_translate_element');
+    }
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <script src="script.js" defer></script>
 </body>
 </html>
